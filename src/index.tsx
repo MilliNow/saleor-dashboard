@@ -23,8 +23,13 @@ import SectionRoute from "./auth/components/SectionRoute";
 import authLink from "./auth/link";
 import { hasPermission } from "./auth/misc";
 import CategorySection from "./categories";
+import ChannelsSection from "./channels";
+import { channelsSection } from "./channels/urls";
 import CollectionSection from "./collections";
 import AppLayout from "./components/AppLayout";
+import useAppChannel, {
+  AppChannelProvider
+} from "./components/AppLayout/AppChannelContext";
 import { DateProvider } from "./components/Date";
 import { LocaleProvider } from "./components/Locale";
 import MessageManagerProvider from "./components/messages";
@@ -44,10 +49,12 @@ import { navigationSection } from "./navigation/urls";
 import { NotFound } from "./NotFound";
 import OrdersSection from "./orders";
 import PageSection from "./pages";
+import PageTypesSection from "./pageTypes";
 import PermissionGroupSection from "./permissionGroups";
 import PluginsSection from "./plugins";
 import ProductSection from "./products";
 import ProductTypesSection from "./productTypes";
+import errorTracker from "./services/errorTracking";
 import ShippingSection from "./shipping";
 import SiteSettingsSection from "./siteSettings";
 import StaffSection from "./staff";
@@ -57,9 +64,11 @@ import { PermissionEnum } from "./types/globalTypes";
 import WarehouseSection from "./warehouses";
 import { warehouseSection } from "./warehouses/urls";
 
-if (process.env.GTM_ID !== undefined) {
+if (process.env.GTM_ID) {
   TagManager.initialize({ gtmId: GTM_ID });
 }
+
+errorTracker.init();
 
 // DON'T TOUCH THIS
 // These are separate clients and do not share configs between themselves
@@ -108,7 +117,9 @@ const App: React.FC = () => {
                   <AppStateProvider>
                     <ShopProvider>
                       <AuthProvider>
-                        <Routes />
+                        <AppChannelProvider>
+                          <Routes />
+                        </AppChannelProvider>
                       </AuthProvider>
                     </ShopProvider>
                   </AppStateProvider>
@@ -132,21 +143,36 @@ const Routes: React.FC = () => {
     tokenVerifyLoading,
     user
   } = useAuth();
+  const { channel } = useAppChannel(false);
+
+  const channelLoaded = typeof channel !== "undefined";
+
+  const homePageLoaded =
+    channelLoaded &&
+    isAuthenticated &&
+    !tokenAuthLoading &&
+    !tokenVerifyLoading;
+
+  const homePageLoading =
+    (isAuthenticated && !channelLoaded) || (hasToken && tokenVerifyLoading);
 
   return (
     <>
       <WindowTitle title={intl.formatMessage(commonMessages.dashboard)} />
-      {isAuthenticated && !tokenAuthLoading && !tokenVerifyLoading ? (
+      {homePageLoaded ? (
         <AppLayout>
           <ErrorBoundary
-            onError={() =>
+            onError={e => {
+              const errorId = errorTracker.captureException(e);
+
               dispatchAppState({
                 payload: {
-                  error: "unhandled"
+                  error: "unhandled",
+                  errorId
                 },
                 type: "displayError"
-              })
-            }
+              });
+            }}
           >
             <Switch>
               <SectionRoute exact path="/" component={HomePage} />
@@ -174,6 +200,11 @@ const Routes: React.FC = () => {
                 permissions={[PermissionEnum.MANAGE_PAGES]}
                 path="/pages"
                 component={PageSection}
+              />
+              <SectionRoute
+                permissions={[PermissionEnum.MANAGE_PAGES]}
+                path="/page-types"
+                component={PageTypesSection}
               />
               <SectionRoute
                 permissions={[PermissionEnum.MANAGE_PLUGINS]}
@@ -249,6 +280,11 @@ const Routes: React.FC = () => {
                 path={warehouseSection}
                 component={WarehouseSection}
               />
+              <SectionRoute
+                permissions={[PermissionEnum.MANAGE_CHANNELS]}
+                path={channelsSection}
+                component={ChannelsSection}
+              />
               {createConfigurationMenu(intl).filter(menu =>
                 menu.menuItems.map(item => hasPermission(item.permission, user))
               ).length > 0 && (
@@ -262,7 +298,7 @@ const Routes: React.FC = () => {
             </Switch>
           </ErrorBoundary>
         </AppLayout>
-      ) : hasToken && tokenVerifyLoading ? (
+      ) : homePageLoading ? (
         <LoginLoading />
       ) : (
         <Auth />

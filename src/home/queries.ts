@@ -1,29 +1,36 @@
+import makeQuery from "@saleor/hooks/makeQuery";
 import gql from "graphql-tag";
 
-import { TypedQuery } from "../queries";
-import { Home } from "./types/Home";
+import { Home, HomeVariables } from "./types/Home";
 
 const home = gql`
-  query Home {
-    salesToday: ordersTotal(period: TODAY) {
+  query Home($channel: String!) {
+    salesToday: ordersTotal(period: TODAY, channel: $channel) {
       gross {
         amount
         currency
       }
     }
-    ordersToday: orders(created: TODAY) {
+    ordersToday: orders(created: TODAY, channel: $channel) {
       totalCount
     }
-    ordersToFulfill: orders(status: READY_TO_FULFILL) {
+    ordersToFulfill: orders(status: READY_TO_FULFILL, channel: $channel) {
       totalCount
     }
-    ordersToCapture: orders(status: READY_TO_CAPTURE) {
+    ordersToCapture: orders(status: READY_TO_CAPTURE, channel: $channel) {
       totalCount
     }
-    productsOutOfStock: products(stockAvailability: OUT_OF_STOCK) {
+    productsOutOfStock: products(
+      stockAvailability: OUT_OF_STOCK
+      channel: $channel
+    ) {
       totalCount
     }
-    productTopToday: reportProductSales(period: TODAY, first: 5) {
+    productTopToday: reportProductSales(
+      period: TODAY
+      first: 5
+      channel: $channel
+    ) {
       edges {
         node {
           id
@@ -73,4 +80,5 @@ const home = gql`
     }
   }
 `;
-export const HomePageQuery = TypedQuery<Home, {}>(home);
+
+export const useHomePage = makeQuery<Home, HomeVariables>(home);

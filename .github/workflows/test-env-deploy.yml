@@ -1,11 +1,7 @@
 name: TEST-ENV-DEPLOYMENT
 # Build and deploy test instance for every pull request
 
-on:
-  pull_request:
-    # trigger on "edited" to update instance when configuration changes in PR description
-    types: [opened, reopened, synchronize]
-    branches: ["*"]
+on: [pull_request]
 
 jobs:
   deploy:
@@ -14,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: rlespinasse/github-slug-action@2.0.0
+      - uses: rlespinasse/github-slug-action@3.1.0
 
       - name: Start deployment
         uses: bobheadxi/deployments@v0.4.2
@@ -63,7 +59,7 @@ jobs:
       - name: Run build
         env:
           # Use custom API_URI or the default one
-          API_URI: ${{ steps.api_uri.outputs.custom_api_uri || 'https://master.staging.saleor.rocks/graphql/' }}
+          API_URI: ${{ steps.api_uri.outputs.custom_api_uri || 'https://master.staging.saleor.cloud/graphql/' }}
           APP_MOUNT_URI: /
           STATIC_URL: /
         run: |
@@ -74,9 +70,10 @@ jobs:
           npm run build-storybook
 
       - name: Set domain
+        id: set-domain
         # Set test instance domain based on branch name slug
         run: |
-          echo "::set-env name=domain::${{ env.GITHUB_HEAD_REF_SLUG_URL }}.dashboard.saleor.rocks"
+          echo "::set-output name=domain::${{ env.GITHUB_HEAD_REF_SLUG_URL }}.dashboard.saleor.rocks"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -87,11 +84,11 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync ./build/dashboard s3://${{ secrets.AWS_TEST_DEPLOYMENT_BUCKET }}/${{ env.domain }}
-          aws s3 sync ./build/storybook s3://${{ secrets.AWS_TEST_DEPLOYMENT_BUCKET }}/${{ env.domain }}/storybook
+          aws s3 sync ./build/dashboard s3://${{ secrets.AWS_TEST_DEPLOYMENT_BUCKET }}/${{ steps.set-domain.outputs.domain }}
+          aws s3 sync ./build/storybook s3://${{ secrets.AWS_TEST_DEPLOYMENT_BUCKET }}/${{ steps.set-domain.outputs.domain }}/storybook
 
       - name: Invalidate cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_TEST_CF_DIST_ID }} --paths "/${{ env.domain }}/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_TEST_CF_DIST_ID }} --paths "/${{ steps.set-domain.outputs.domain }}/*"
 
       - name: Update deployment status
         uses: bobheadxi/deployments@v0.4.2
@@ -100,7 +97,7 @@ jobs:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
-          env_url: https://${{ env.domain }}/
+          env_url: https://${{ steps.set-domain.outputs.domain }}/
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
       - name: Update storybook deployment status
@@ -110,5 +107,5 @@ jobs:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
-          env_url: https://${{ env.domain }}/storybook/index.html
+          env_url: https://${{ steps.set-domain.outputs.domain }}/storybook/index.html
           deployment_id: ${{ steps.storybook-deployment.outputs.deployment_id }}

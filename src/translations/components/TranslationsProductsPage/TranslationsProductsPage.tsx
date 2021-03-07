@@ -5,32 +5,27 @@ import LanguageSwitch from "@saleor/components/LanguageSwitch";
 import PageHeader from "@saleor/components/PageHeader";
 import { ProductTranslationFragment } from "@saleor/fragments/types/ProductTranslationFragment";
 import { commonMessages, sectionNames } from "@saleor/intl";
-import { TranslationsEntitiesPageProps } from "@saleor/translations/types";
+import {
+  TranslationInputFieldName,
+  TranslationsEntitiesPageProps
+} from "@saleor/translations/types";
 import React from "react";
 import { useIntl } from "react-intl";
 
-import { maybe } from "../../../misc";
 import { LanguageCodeEnum } from "../../../types/globalTypes";
 import TranslationFields from "../TranslationFields";
 
 export interface TranslationsProductsPageProps
   extends TranslationsEntitiesPageProps {
-  product: ProductTranslationFragment;
+  data: ProductTranslationFragment;
 }
-
-export const fieldNames = {
-  descriptionJson: "description",
-  name: "name",
-  seoDescription: "seoDescription",
-  seoTitle: "seoTitle"
-};
 
 const TranslationsProductsPage: React.FC<TranslationsProductsPageProps> = ({
   activeField,
   disabled,
   languageCode,
   languages,
-  product,
+  data,
   saveButtonState,
   onBack,
   onDiscard,
@@ -54,7 +49,7 @@ const TranslationsProductsPage: React.FC<TranslationsProductsPageProps> = ({
           },
           {
             languageCode,
-            productName: maybe(() => product.name, "...")
+            productName: data?.product?.name || "..."
           }
         )}
       >
@@ -74,23 +69,19 @@ const TranslationsProductsPage: React.FC<TranslationsProductsPageProps> = ({
             displayName: intl.formatMessage({
               defaultMessage: "Product Name"
             }),
-            name: fieldNames.name,
-            translation: maybe(() =>
-              product.translation ? product.translation.name : null
-            ),
+            name: TranslationInputFieldName.name,
+            translation: data?.translation?.name || null,
             type: "short" as "short",
-            value: maybe(() => product.name)
+            value: data?.product?.name
           },
           {
             displayName: intl.formatMessage({
               defaultMessage: "Description"
             }),
-            name: fieldNames.descriptionJson,
-            translation: maybe(() =>
-              product.translation ? product.translation.descriptionJson : null
-            ),
+            name: TranslationInputFieldName.description,
+            translation: data?.translation?.description || null,
             type: "rich" as "rich",
-            value: maybe(() => product.descriptionJson)
+            value: data?.product?.description
           }
         ]}
         saveButtonState={saveButtonState}
@@ -111,23 +102,19 @@ const TranslationsProductsPage: React.FC<TranslationsProductsPageProps> = ({
             displayName: intl.formatMessage({
               defaultMessage: "Search Engine Title"
             }),
-            name: fieldNames.seoTitle,
-            translation: maybe(() =>
-              product.translation ? product.translation.seoTitle : null
-            ),
+            name: TranslationInputFieldName.seoTitle,
+            translation: data?.translation?.seoTitle || null,
             type: "short" as "short",
-            value: maybe(() => product.seoTitle)
+            value: data?.product?.seoTitle
           },
           {
             displayName: intl.formatMessage({
               defaultMessage: "Search Engine Description"
             }),
-            name: fieldNames.seoDescription,
-            translation: maybe(() =>
-              product.translation ? product.translation.seoDescription : null
-            ),
+            name: TranslationInputFieldName.seoDescription,
+            translation: data?.translation?.seoDescription || null,
             type: "long" as "long",
-            value: maybe(() => product.seoDescription)
+            value: data?.product?.seoDescription
           }
         ]}
         saveButtonState={saveButtonState}

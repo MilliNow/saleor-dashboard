@@ -1,4 +1,6 @@
 import placeholderImage from "@assets/images/placeholder255x255.png";
+import { channelsList } from "@saleor/channels/fixtures";
+import { createChannelsData } from "@saleor/channels/utils";
 import { collections } from "@saleor/collections/fixtures";
 import { fetchMoreProps, listActionsProps } from "@saleor/fixtures";
 import ProductUpdatePage, {
@@ -15,11 +17,21 @@ import Decorator from "../../Decorator";
 import { taxTypes } from "../taxes/fixtures";
 
 const product = productFixture(placeholderImage);
+const channels = createChannelsData(channelsList);
+
+const channelChoices = product.channelListings.map(listing => ({
+  label: listing.channel.name,
+  value: listing.channel.id
+}));
 
 const props: ProductUpdatePageProps = {
   ...listActionsProps,
+  allChannelsCount: 5,
   categories: [product.category],
+  channelChoices,
+  channelsErrors: [],
   collections,
+  currentChannels: [],
   defaultWeightUnit: "kg",
   disabled: false,
   errors: [],
@@ -27,9 +39,13 @@ const props: ProductUpdatePageProps = {
   fetchCollections: () => undefined,
   fetchMoreCategories: fetchMoreProps,
   fetchMoreCollections: fetchMoreProps,
+  hasChannelChanged: false,
   header: product.name,
   images: product.images,
+  onAssignReferencesClick: () => undefined,
   onBack: () => undefined,
+  onChannelsChange: () => undefined,
+  onCloseDialog: () => undefined,
   onDelete: () => undefined,
   onImageDelete: () => undefined,
   onImageUpload: () => undefined,
@@ -40,9 +56,13 @@ const props: ProductUpdatePageProps = {
   onVariantShow: () => undefined,
   onVariantsAdd: () => undefined,
   onWarehouseConfigure: () => undefined,
+  openChannelsModal: () => undefined,
   placeholderImage,
   product,
+  referencePages: [],
+  referenceProducts: [],
   saveButtonBarState: "default",
+  selectedChannelId: "123",
   taxTypes,
   variants: product.variants,
   warehouses: warehouseList
@@ -139,11 +159,9 @@ storiesOf("Views / Products / Product edit", module)
       {...props}
       errors={([
         "attributes",
-        "basePrice",
         "category",
         "chargeTaxes",
         "collections",
-        "isPublished",
         "name",
         "publicationDate",
         "seoDescription",
@@ -162,4 +180,7 @@ storiesOf("Views / Products / Product edit", module)
         })
       )}
     />
+  ))
+  .add("with channels", () => (
+    <ProductUpdatePage {...props} currentChannels={channels} />
   ));

@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { ProductInput, ProductErrorCode, AttributeInputTypeEnum, WeightUnitsEnum } from "./../../types/globalTypes";
+import { ProductInput, ProductErrorCode, AttributeInputTypeEnum, AttributeEntityTypeEnum, WeightUnitsEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ProductUpdate
@@ -15,11 +15,19 @@ export interface ProductUpdate_productUpdate_errors {
   attributes: string[] | null;
 }
 
+export interface ProductUpdate_productUpdate_product_attributes_attribute_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface ProductUpdate_productUpdate_product_attributes_attribute_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductUpdate_productUpdate_product_attributes_attribute_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductUpdate_productUpdate_product_attributes_attribute {
@@ -28,8 +36,15 @@ export interface ProductUpdate_productUpdate_product_attributes_attribute {
   slug: string | null;
   name: string | null;
   inputType: AttributeInputTypeEnum | null;
+  entityType: AttributeEntityTypeEnum | null;
   valueRequired: boolean;
   values: (ProductUpdate_productUpdate_product_attributes_attribute_values | null)[] | null;
+}
+
+export interface ProductUpdate_productUpdate_product_attributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
 }
 
 export interface ProductUpdate_productUpdate_product_attributes_values {
@@ -37,6 +52,8 @@ export interface ProductUpdate_productUpdate_product_attributes_values {
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductUpdate_productUpdate_product_attributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductUpdate_productUpdate_product_attributes {
@@ -45,11 +62,19 @@ export interface ProductUpdate_productUpdate_product_attributes {
   values: (ProductUpdate_productUpdate_product_attributes_values | null)[];
 }
 
+export interface ProductUpdate_productUpdate_product_productType_variantAttributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface ProductUpdate_productUpdate_product_productType_variantAttributes_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductUpdate_productUpdate_product_productType_variantAttributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductUpdate_productUpdate_product_productType_variantAttributes {
@@ -74,37 +99,55 @@ export interface ProductUpdate_productUpdate_product_productType {
   taxType: ProductUpdate_productUpdate_product_productType_taxType | null;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_start_gross {
+export interface ProductUpdate_productUpdate_product_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_start_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_start {
+export interface ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_start {
   __typename: "TaxedMoney";
-  gross: ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_start_gross;
+  net: ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_start_net;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_stop_gross {
+export interface ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_stop_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_stop {
+export interface ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_stop {
   __typename: "TaxedMoney";
-  gross: ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_stop_gross;
+  net: ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_stop_net;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted {
+export interface ProductUpdate_productUpdate_product_channelListings_pricing_priceRange {
   __typename: "TaxedMoneyRange";
-  start: ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_start | null;
-  stop: ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted_stop | null;
+  start: ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_start | null;
+  stop: ProductUpdate_productUpdate_product_channelListings_pricing_priceRange_stop | null;
 }
 
-export interface ProductUpdate_productUpdate_product_pricing {
+export interface ProductUpdate_productUpdate_product_channelListings_pricing {
   __typename: "ProductPricingInfo";
-  priceRangeUndiscounted: ProductUpdate_productUpdate_product_pricing_priceRangeUndiscounted | null;
+  priceRange: ProductUpdate_productUpdate_product_channelListings_pricing_priceRange | null;
+}
+
+export interface ProductUpdate_productUpdate_product_channelListings {
+  __typename: "ProductChannelListing";
+  channel: ProductUpdate_productUpdate_product_channelListings_channel;
+  pricing: ProductUpdate_productUpdate_product_channelListings_pricing | null;
+  isPublished: boolean;
+  publicationDate: any | null;
+  isAvailableForPurchase: boolean | null;
+  availableForPurchase: any | null;
+  visibleInListings: boolean;
 }
 
 export interface ProductUpdate_productUpdate_product_metadata {
@@ -136,42 +179,12 @@ export interface ProductUpdate_productUpdate_product_collections {
   name: string;
 }
 
-export interface ProductUpdate_productUpdate_product_margin {
-  __typename: "Margin";
-  start: number | null;
-  stop: number | null;
-}
-
-export interface ProductUpdate_productUpdate_product_purchaseCost_start {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
-export interface ProductUpdate_productUpdate_product_purchaseCost_stop {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
-export interface ProductUpdate_productUpdate_product_purchaseCost {
-  __typename: "MoneyRange";
-  start: ProductUpdate_productUpdate_product_purchaseCost_start | null;
-  stop: ProductUpdate_productUpdate_product_purchaseCost_stop | null;
-}
-
 export interface ProductUpdate_productUpdate_product_images {
   __typename: "ProductImage";
   id: string;
   alt: string;
   sortOrder: number | null;
   url: string;
-}
-
-export interface ProductUpdate_productUpdate_product_variants_price {
-  __typename: "Money";
-  amount: number;
-  currency: string;
 }
 
 export interface ProductUpdate_productUpdate_product_variants_stocks_warehouse {
@@ -188,15 +201,41 @@ export interface ProductUpdate_productUpdate_product_variants_stocks {
   warehouse: ProductUpdate_productUpdate_product_variants_stocks_warehouse;
 }
 
+export interface ProductUpdate_productUpdate_product_variants_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface ProductUpdate_productUpdate_product_variants_channelListings_price {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface ProductUpdate_productUpdate_product_variants_channelListings_costPrice {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface ProductUpdate_productUpdate_product_variants_channelListings {
+  __typename: "ProductVariantChannelListing";
+  channel: ProductUpdate_productUpdate_product_variants_channelListings_channel;
+  price: ProductUpdate_productUpdate_product_variants_channelListings_price | null;
+  costPrice: ProductUpdate_productUpdate_product_variants_channelListings_costPrice | null;
+}
+
 export interface ProductUpdate_productUpdate_product_variants {
   __typename: "ProductVariant";
   id: string;
   sku: string;
   name: string;
-  price: ProductUpdate_productUpdate_product_variants_price | null;
   margin: number | null;
   stocks: (ProductUpdate_productUpdate_product_variants_stocks | null)[] | null;
   trackInventory: boolean;
+  channelListings: ProductUpdate_productUpdate_product_variants_channelListings[] | null;
 }
 
 export interface ProductUpdate_productUpdate_product_weight {
@@ -216,30 +255,24 @@ export interface ProductUpdate_productUpdate_product {
   id: string;
   attributes: ProductUpdate_productUpdate_product_attributes[];
   productType: ProductUpdate_productUpdate_product_productType;
-  pricing: ProductUpdate_productUpdate_product_pricing | null;
+  channelListings: ProductUpdate_productUpdate_product_channelListings[] | null;
   metadata: (ProductUpdate_productUpdate_product_metadata | null)[];
   privateMetadata: (ProductUpdate_productUpdate_product_privateMetadata | null)[];
   name: string;
   slug: string;
-  descriptionJson: any;
+  description: any | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  rating: number | null;
   defaultVariant: ProductUpdate_productUpdate_product_defaultVariant | null;
   category: ProductUpdate_productUpdate_product_category | null;
   collections: (ProductUpdate_productUpdate_product_collections | null)[] | null;
-  margin: ProductUpdate_productUpdate_product_margin | null;
-  purchaseCost: ProductUpdate_productUpdate_product_purchaseCost | null;
-  isAvailableForPurchase: boolean | null;
-  isAvailable: boolean | null;
-  isPublished: boolean;
   chargeTaxes: boolean;
-  publicationDate: any | null;
   images: (ProductUpdate_productUpdate_product_images | null)[] | null;
+  isAvailable: boolean | null;
   variants: (ProductUpdate_productUpdate_product_variants | null)[] | null;
   weight: ProductUpdate_productUpdate_product_weight | null;
   taxType: ProductUpdate_productUpdate_product_taxType | null;
-  availableForPurchase: any | null;
-  visibleInListings: boolean;
 }
 
 export interface ProductUpdate_productUpdate {

@@ -2,6 +2,12 @@ import Card from "@material-ui/core/Card";
 import Checkbox from "@material-ui/core/Checkbox";
 import { createMuiTheme, Theme } from "@material-ui/core/styles";
 import { darken, fade } from "@material-ui/core/styles/colorManipulator";
+import { ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
+import {
+  Palette,
+  PaletteOptions
+} from "@material-ui/core/styles/createPalette";
+import { Overrides } from "@material-ui/core/styles/overrides";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { createElement } from "react";
@@ -22,9 +28,184 @@ export const ICONBUTTON_SIZE = 48;
 
 const fontFamily = '"Inter", "roboto", "sans-serif"';
 
-export default (colors: IThemeColors): Theme =>
+export interface ITheme extends Theme {
+  palette: IPalette;
+}
+
+interface IThemeOptions extends ThemeOptions {
+  palette: IPaletteOptions;
+}
+
+interface IPalette extends Palette, ExtraPaletteOptions {}
+
+interface IPaletteOptions extends PaletteOptions, ExtraPaletteOptions {}
+
+interface ExtraPaletteOptions {
+  textHighlighted?: {
+    active: string;
+    inactive: string;
+  };
+}
+
+const inputOverrides = (colors: IThemeColors): Overrides => ({
+  MuiInput: {
+    input: {
+      "&:-webkit-autofill": {
+        WebkitTextFillColor: colors.font.default,
+        boxShadow: `inset 0 0 0px 9999px ${colors.autofill}`
+      },
+      "&::placeholder": {
+        opacity: "1 !important" as any
+      },
+      color: colors.font.default
+    },
+    underline: {
+      "&:after": {
+        borderBottomColor: colors.primary
+      }
+    }
+  },
+  MuiInputBase: {
+    input: {
+      "&$disabled": {
+        color: colors.input.disabledText
+      },
+      "&::placeholder": {
+        color: colors.font.gray,
+        opacity: "1 !important" as any
+      },
+      zIndex: 2
+    }
+  },
+  MuiInputLabel: {
+    filled: {
+      zIndex: 2
+    },
+    formControl: {
+      transform: "translate(0, 1.5px) scale(0.75)",
+      transformOrigin: "top left" as "top left",
+      width: "100%"
+    },
+    outlined: {
+      "&$shrink": {
+        transform: "translate(12px, 9px) scale(0.75)"
+      },
+      transform: "translate(14px, 18px) scale(1)",
+      zIndex: 9
+    },
+    root: {
+      "&$disabled": {
+        color: `${fade(colors.primary, 0.4)} !important` as any
+      },
+      "&$error": {
+        "&$focused": {
+          color: colors.error
+        },
+        color: colors.error
+      },
+      "&&$focused": {
+        "&:not($error)": {
+          color: colors.primary
+        }
+      },
+      color: fade(colors.input.text, 0.6)
+    },
+    shrink: {
+      // Negates x0.75 scale
+      width: "133%"
+    }
+  },
+  MuiOutlinedInput: {
+    input: {
+      "&:-webkit-autofill": {
+        borderRadius: 4,
+        boxShadow: `0 0 0px 1000px rgba(19, 190, 187, 0.1) inset`,
+        zIndex: 0
+      },
+      color: colors.input.text,
+      padding: "23px 12px 10px 12px"
+    },
+    inputMultiline: {
+      left: -2,
+      padding: "10px 0",
+      position: "relative"
+    },
+    root: {
+      "& fieldset": {
+        "&&:not($error)": {
+          borderColor: colors.input.border
+        },
+        top: 0,
+        zIndex: 1
+      },
+      "& legend": {
+        display: "none"
+      },
+      "&$disabled": {
+        "& fieldset": {
+          borderColor: [[colors.input.disabled], "!important"] as any
+        },
+        "& input": {
+          backgroundColor: colors.input.disabledBackground,
+          color: colors.input.disabledText,
+          zIndex: 2
+        }
+      },
+      "&$error": {
+        "&$focused": {
+          "& fieldset": {
+            borderColor: colors.error
+          },
+          "& input": {
+            color: colors.error,
+            zIndex: 2
+          }
+        },
+        "&:hover": {
+          "& fieldset": {
+            borderColor: colors.error
+          },
+          "& input": {
+            color: colors.error,
+            zIndex: 2
+          }
+        }
+      },
+      "&$focused": {
+        "& input": {
+          "& fieldset": {
+            borderColor: colors.primary
+          },
+          "&::placeholder": {
+            opacity: [[1], "!important"] as any
+          },
+          color: colors.font.default
+        }
+      },
+      "&:hover": {
+        "& input": {
+          color: colors.font.default
+        },
+        "&&&": {
+          "& fieldset": {
+            borderColor: colors.primary
+          },
+          "&$error fieldset": {
+            borderColor: colors.input.error
+          }
+        }
+      },
+      backgroundColor: colors.background.paper,
+      borderColor: colors.input.border,
+      top: 0
+    }
+  }
+});
+
+const createTheme = (colors: IThemeColors): ITheme =>
   createMuiTheme({
     overrides: {
+      ...inputOverrides(colors),
       MuiButton: {
         contained: {
           "&$disabled": {
@@ -49,6 +230,11 @@ export default (colors: IThemeColors): Theme =>
         label: {
           color: colors.font.button,
           fontWeight: 600
+        },
+        outlined: {
+          "& span": {
+            color: colors.primary
+          }
         },
         root: {
           "& svg": {
@@ -145,73 +331,6 @@ export default (colors: IThemeColors): Theme =>
           }
         }
       },
-      MuiInput: {
-        input: {
-          "&:-webkit-autofill": {
-            WebkitTextFillColor: colors.font.default,
-            boxShadow: `inset 0 0 0px 9999px ${colors.autofill}`
-          },
-          "&::placeholder": {
-            opacity: "1 !important" as any
-          },
-          color: colors.font.default
-        },
-        underline: {
-          "&:after": {
-            borderBottomColor: colors.primary
-          }
-        }
-      },
-      MuiInputBase: {
-        input: {
-          "&$disabled": {
-            color: colors.input.disabledText
-          },
-          "&::placeholder": {
-            color: colors.font.gray,
-            opacity: "1 !important" as any
-          },
-          zIndex: 2
-        }
-      },
-      MuiInputLabel: {
-        filled: {
-          zIndex: 2
-        },
-        formControl: {
-          transform: "translate(0, 1.5px) scale(0.75)",
-          transformOrigin: "top left" as "top left",
-          width: "100%"
-        },
-        outlined: {
-          "&$shrink": {
-            transform: "translate(12px, 9px) scale(0.75)"
-          },
-          transform: "translate(14px, 18px) scale(1)",
-          zIndex: 9
-        },
-        root: {
-          "&$disabled": {
-            color: `${fade(colors.primary, 0.4)} !important` as any
-          },
-          "&$error": {
-            "&$focused": {
-              color: colors.error
-            },
-            color: colors.error
-          },
-          "&&$focused": {
-            "&:not($error)": {
-              color: colors.primary
-            }
-          },
-          color: fade(colors.input.text, 0.6)
-        },
-        shrink: {
-          // Negates x0.75 scale
-          width: "133%"
-        }
-      },
       MuiList: {
         root: {
           display: "grid",
@@ -254,92 +373,11 @@ export default (colors: IThemeColors): Theme =>
           borderRadius: 4
         }
       },
-      MuiOutlinedInput: {
-        input: {
-          "&:-webkit-autofill": {
-            borderRadius: 4,
-            boxShadow: `0 0 0px 1000px rgba(19, 190, 187, 0.1) inset`,
-            zIndex: 0
-          },
-          "&::placeholder": {
-            opacity: [[0], "!important"] as any
-          },
-          color: colors.input.text,
-          padding: "23px 12px 10px 12px"
-        },
-        inputMultiline: {
-          left: -2,
-          padding: "10px 0",
-          position: "relative"
-        },
+      MuiSelect: {
         root: {
-          "& fieldset": {
-            "&&:not($error)": {
-              borderColor: colors.input.border
-            },
-            top: 0,
-            zIndex: 1
-          },
-          "& legend": {
-            display: "none"
-          },
           "&$disabled": {
-            "& fieldset": {
-              backgroundColor: colors.input.disabledBackground,
-              borderColor: [[colors.input.disabled], "!important"] as any
-            },
-            "& input": {
-              color: colors.input.disabledText,
-              zIndex: 2
-            }
-          },
-          "&$error": {
-            "&$focused": {
-              "& fieldset": {
-                borderColor: colors.error
-              },
-              "& input": {
-                color: colors.error,
-                zIndex: 2
-              }
-            },
-            "&:hover": {
-              "& fieldset": {
-                borderColor: colors.error
-              },
-              "& input": {
-                color: colors.error,
-                zIndex: 2
-              }
-            }
-          },
-          "&$focused": {
-            "& input": {
-              "& fieldset": {
-                borderColor: colors.primary
-              },
-              "&::placeholder": {
-                opacity: [[1], "!important"] as any
-              },
-              color: colors.font.default
-            }
-          },
-          "&:hover": {
-            "& input": {
-              color: colors.font.default
-            },
-            "&&&": {
-              "& fieldset": {
-                borderColor: colors.primary
-              },
-              "&$error fieldset": {
-                borderColor: colors.input.error
-              }
-            }
-          },
-          backgroundColor: colors.background.paper,
-          borderColor: colors.input.border,
-          top: 0
+            backgroundColor: colors.input.disabledBackground
+          }
         }
       },
       MuiSnackbarContent: {
@@ -504,6 +542,10 @@ export default (colors: IThemeColors): Theme =>
         primary: colors.font.default,
         secondary: colors.font.gray
       },
+      textHighlighted: {
+        active: colors.primary,
+        inactive: colors.highlightInactive.default
+      },
       type: colors.theme
     },
     props: {
@@ -553,7 +595,7 @@ export default (colors: IThemeColors): Theme =>
         fontSize: "1.3125rem"
       }
     }
-  });
+  } as IThemeOptions);
 
 TextField.defaultProps = {
   ...TextField.defaultProps,
@@ -575,3 +617,5 @@ Checkbox.defaultProps = {
   icon: createElement(CheckboxIcon),
   indeterminateIcon: createElement(CheckboxIndeterminateIcon)
 };
+
+export default createTheme;

@@ -11,12 +11,49 @@ import Skeleton from "@saleor/components/Skeleton";
 import { UserPermissionProps } from "@saleor/types";
 import { PermissionEnum } from "@saleor/types/globalTypes";
 import React from "react";
-import { FormattedMessage } from "react-intl";
+import { defineMessages, useIntl } from "react-intl";
+
+const messages = defineMessages({
+  createNewChannel: {
+    defaultMessage: "Create new channel"
+  },
+  noOrders: {
+    defaultMessage: "No orders ready to fulfill",
+    id: "homeNotificationTableNoOrders"
+  },
+  noPaymentWaiting: {
+    defaultMessage: "No payments waiting for capture",
+    id: "homeNotificationsNoPayments"
+  },
+  noProductsOut: {
+    defaultMessage: "No products out of stock",
+    id: "homeNotificationsTableNoProducts"
+  },
+  orderReady: {
+    defaultMessage:
+      "{amount, plural,one {One order is ready to fulfill} other {{amount} Orders are ready to fulfill}}",
+    id: "homeNotificationTableOrders"
+  },
+  paymentCapture: {
+    defaultMessage:
+      "{amount, plural,one {One payment to capture}other {{amount} Payments to capture}}",
+    id: "homeNotificationTablePayments"
+  },
+  productOut: {
+    defaultMessage:
+      "{amount, plural,one {One product out of stock}other {{amount} Products out of stock}}",
+    id: "homeNotificationTableProducts"
+  }
+});
 
 const useStyles = makeStyles(
-  theme => ({
+  () => ({
     arrowIcon: {
-      width: theme.spacing(4)
+      textAlign: "right",
+      width: "auto"
+    },
+    tableCard: {
+      overflow: "hidden"
     },
     tableRow: {
       cursor: "pointer"
@@ -29,52 +66,68 @@ interface HomeNotificationTableProps extends UserPermissionProps {
   ordersToCapture: number;
   ordersToFulfill: number;
   productsOutOfStock: number;
+  onCreateNewChannelClick: () => void;
   onOrdersToFulfillClick: () => void;
   onOrdersToCaptureClick: () => void;
   onProductsOutOfStockClick: () => void;
+  noChannel: boolean;
 }
 
 const HomeNotificationTable: React.FC<HomeNotificationTableProps> = props => {
   const {
+    onCreateNewChannelClick,
     onOrdersToCaptureClick,
     onOrdersToFulfillClick,
     onProductsOutOfStockClick,
     ordersToCapture,
     ordersToFulfill,
     productsOutOfStock,
-    userPermissions
+    userPermissions,
+    noChannel
   } = props;
 
   const classes = useStyles(props);
 
+  const intl = useIntl();
+
   return (
-    <Card>
+    <Card className={classes.tableCard}>
       <ResponsiveTable>
         <TableBody className={classes.tableRow}>
+          {noChannel && (
+            <RequirePermissions
+              userPermissions={userPermissions}
+              requiredPermissions={[PermissionEnum.MANAGE_CHANNELS]}
+            >
+              <TableRow hover={true} onClick={onCreateNewChannelClick}>
+                <TableCell>
+                  <Typography>
+                    {intl.formatMessage(messages.createNewChannel)}
+                  </Typography>
+                </TableCell>
+                <TableCell className={classes.arrowIcon}>
+                  <KeyboardArrowRight />
+                </TableCell>
+              </TableRow>
+            </RequirePermissions>
+          )}
           <RequirePermissions
             userPermissions={userPermissions}
             requiredPermissions={[PermissionEnum.MANAGE_ORDERS]}
           >
             <TableRow hover={true} onClick={onOrdersToFulfillClick}>
-              <TableCell>
+              <TableCell data-test-id="orders-to-fulfill">
                 {ordersToFulfill === undefined ? (
                   <Skeleton />
                 ) : ordersToFulfill === 0 ? (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="No orders ready to fulfill"
-                      id="homeNotificationTableNoOrders"
-                    />
+                    {intl.formatMessage(messages.noOrders)}
                   </Typography>
                 ) : (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="{amount, plural,one {One order is ready to fulfill} other {{amount} Orders are ready to fulfill}}"
-                      id="homeNotificationTableOrders"
-                      values={{
-                        amount: <strong>{ordersToFulfill}</strong>
-                      }}
-                    />
+                    {intl.formatMessage(messages.orderReady, {
+                      amount: <strong>{ordersToFulfill}</strong>
+                    })}
                   </Typography>
                 )}
               </TableCell>
@@ -83,25 +136,18 @@ const HomeNotificationTable: React.FC<HomeNotificationTableProps> = props => {
               </TableCell>
             </TableRow>
             <TableRow hover={true} onClick={onOrdersToCaptureClick}>
-              <TableCell>
+              <TableCell data-test-id="orders-to-capture">
                 {ordersToCapture === undefined ? (
                   <Skeleton />
                 ) : ordersToCapture === 0 ? (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="No payments waiting for capture"
-                      id="homeNotificationsNoPayments"
-                    />
+                    {intl.formatMessage(messages.noPaymentWaiting)}
                   </Typography>
                 ) : (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="{amount, plural,one {One payment to capture}other {{amount} Payments to capture}}"
-                      id="homeNotificationTablePayments"
-                      values={{
-                        amount: <strong>{ordersToCapture}</strong>
-                      }}
-                    />
+                    {intl.formatMessage(messages.paymentCapture, {
+                      amount: <strong>{ordersToCapture}</strong>
+                    })}
                   </Typography>
                 )}
               </TableCell>
@@ -115,25 +161,18 @@ const HomeNotificationTable: React.FC<HomeNotificationTableProps> = props => {
             requiredPermissions={[PermissionEnum.MANAGE_PRODUCTS]}
           >
             <TableRow hover={true} onClick={onProductsOutOfStockClick}>
-              <TableCell>
+              <TableCell data-test-id="products-out-of-stock">
                 {productsOutOfStock === undefined ? (
                   <Skeleton />
                 ) : productsOutOfStock === 0 ? (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="No products out of stock"
-                      id="homeNotificationsTableNoProducts"
-                    />
+                    {intl.formatMessage(messages.noProductsOut)}
                   </Typography>
                 ) : (
                   <Typography>
-                    <FormattedMessage
-                      defaultMessage="{amount, plural,one {One product out of stock}other {{amount} Products out of stock}}"
-                      id="homeNotificationTableProducts"
-                      values={{
-                        amount: <strong>{productsOutOfStock}</strong>
-                      }}
-                    />
+                    {intl.formatMessage(messages.productOut, {
+                      amount: <strong>{productsOutOfStock}</strong>
+                    })}
                   </Typography>
                 )}
               </TableCell>

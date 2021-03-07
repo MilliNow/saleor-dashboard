@@ -118,7 +118,7 @@ export const ShippingZonesList: React.FC<ShippingZonesListProps> = ({
   return (
     <>
       <ShippingZonesListPage
-        defaultWeightUnit={maybe(() => shop.defaultWeightUnit)}
+        defaultWeightUnit={shop?.defaultWeightUnit}
         settings={settings}
         disabled={
           loading ||

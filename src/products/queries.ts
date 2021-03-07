@@ -1,10 +1,11 @@
+import { attributeValueFragment } from "@saleor/fragments/attributes";
 import { pageInfoFragment } from "@saleor/fragments/pageInfo";
 import {
-  fragmentMoney,
   fragmentVariant,
   productFragment,
   productFragmentDetails,
-  productVariantAttributesFragment
+  productVariantAttributesFragment,
+  variantAttributeFragment
 } from "@saleor/fragments/products";
 import { taxTypeFragment } from "@saleor/fragments/taxes";
 import { warehouseFragment } from "@saleor/fragments/warehouses";
@@ -94,8 +95,8 @@ export const useInitialProductFilterDataQuery = makeQuery<
 >(initialProductFilterDataQuery);
 
 const productListQuery = gql`
-  ${fragmentMoney}
   ${productFragment}
+  ${attributeValueFragment}
   query ProductList(
     $first: Int
     $after: String
@@ -120,22 +121,7 @@ const productListQuery = gql`
               id
             }
             values {
-              id
-              name
-            }
-          }
-          pricing {
-            priceRangeUndiscounted {
-              start {
-                gross {
-                  ...Money
-                }
-              }
-              stop {
-                gross {
-                  ...Money
-                }
-              }
+              ...AttributeValueFragment
             }
           }
         }
@@ -168,8 +154,8 @@ export const useCountAllProducts = makeQuery<CountAllProducts, null>(
 const productDetailsQuery = gql`
   ${productFragmentDetails}
   ${taxTypeFragment}
-  query ProductDetails($id: ID!) {
-    product(id: $id) {
+  query ProductDetails($id: ID!, $channel: String) {
+    product(id: $id, channel: $channel) {
       ...Product
     }
     taxTypes {
@@ -178,6 +164,11 @@ const productDetailsQuery = gql`
   }
 `;
 export const useProductDetails = makeQuery<
+  ProductDetails,
+  ProductDetailsVariables
+>(productDetailsQuery);
+
+export const useProductDetailsQuery = makeQuery<
   ProductDetails,
   ProductDetailsVariables
 >(productDetailsQuery);
@@ -196,6 +187,7 @@ export const useProductVariantQuery = makeQuery<
 >(productVariantQuery);
 
 const productVariantCreateQuery = gql`
+  ${variantAttributeFragment}
   query ProductVariantCreateData($id: ID!) {
     product(id: $id) {
       id
@@ -204,19 +196,25 @@ const productVariantCreateQuery = gql`
         sortOrder
         url
       }
+      channelListings {
+        channel {
+          id
+          name
+          currencyCode
+        }
+      }
       name
       productType {
         id
-        variantAttributes {
-          id
-          slug
-          name
-          valueRequired
-          values {
-            id
-            name
-            slug
-          }
+        selectionVariantAttributes: variantAttributes(
+          variantSelection: VARIANT_SELECTION
+        ) {
+          ...VariantAttributeFragment
+        }
+        nonSelectionVariantAttributes: variantAttributes(
+          variantSelection: NOT_VARIANT_SELECTION
+        ) {
+          ...VariantAttributeFragment
         }
       }
       thumbnail {
@@ -267,7 +265,11 @@ const availableInGridAttributes = gql`
     availableInGrid: attributes(
       first: $first
       after: $after
-      filter: { availableInGrid: true, isVariantOnly: false }
+      filter: {
+        availableInGrid: true
+        isVariantOnly: false
+        type: PRODUCT_TYPE
+      }
     ) {
       edges {
         node {

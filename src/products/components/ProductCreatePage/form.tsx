@@ -1,46 +1,66 @@
+import { OutputData } from "@editorjs/editorjs";
+import { getAttributesDisplayData } from "@saleor/attributes/utils/data";
+import {
+  createAttributeChangeHandler,
+  createAttributeFileChangeHandler,
+  createAttributeMultiChangeHandler,
+  createAttributeReferenceChangeHandler,
+  createAttributeValueReorderHandler,
+  createFetchMoreReferencesHandler,
+  createFetchReferencesHandler
+} from "@saleor/attributes/utils/handlers";
+import { ChannelData, ChannelPriceArgs } from "@saleor/channels/utils";
+import {
+  AttributeInput,
+  AttributeInputData
+} from "@saleor/components/Attributes";
 import { MetadataFormData } from "@saleor/components/Metadata";
 import { MultiAutocompleteChoiceType } from "@saleor/components/MultiAutocompleteSelectField";
+import { RichTextEditorChange } from "@saleor/components/RichTextEditor";
 import { SingleAutocompleteChoiceType } from "@saleor/components/SingleAutocompleteSelectField";
 import useForm, { FormChange } from "@saleor/hooks/useForm";
-import useFormset, { FormsetChange } from "@saleor/hooks/useFormset";
+import useFormset, {
+  FormsetChange,
+  FormsetData
+} from "@saleor/hooks/useFormset";
 import useStateFromProps from "@saleor/hooks/useStateFromProps";
 import {
   getAttributeInputFromProductType,
   ProductType
 } from "@saleor/products/utils/data";
 import {
-  createAttributeChangeHandler,
-  createAttributeMultiChangeHandler,
+  createChannelsChangeHandler,
+  createChannelsPriceChangeHandler,
   createProductTypeSelectHandler
 } from "@saleor/products/utils/handlers";
+import {
+  validateCostPrice,
+  validatePrice
+} from "@saleor/products/utils/validation";
+import { SearchPages_search_edges_node } from "@saleor/searches/types/SearchPages";
+import { SearchProducts_search_edges_node } from "@saleor/searches/types/SearchProducts";
+import { SearchProductTypes_search_edges_node } from "@saleor/searches/types/SearchProductTypes";
 import { SearchWarehouses_search_edges_node } from "@saleor/searches/types/SearchWarehouses";
+import { FetchMoreProps, ReorderEvent } from "@saleor/types";
 import createMultiAutocompleteSelectHandler from "@saleor/utils/handlers/multiAutocompleteSelectChangeHandler";
 import createSingleAutocompleteSelectHandler from "@saleor/utils/handlers/singleAutocompleteSelectChangeHandler";
 import useMetadataChangeTrigger from "@saleor/utils/metadata/useMetadataChangeTrigger";
-import { RawDraftContentState } from "draft-js";
+import useRichText from "@saleor/utils/richText/useRichText";
 import React from "react";
 
-import { SearchProductTypes_search_edges_node } from "../../../searches/types/SearchProductTypes";
-import {
-  ProductAttributeInput,
-  ProductAttributeInputData
-} from "../ProductAttributes";
-import { ProductStockInput } from "../ProductStocks";
+import { ProductStockFormsetData, ProductStockInput } from "../ProductStocks";
 
 export interface ProductCreateFormData extends MetadataFormData {
-  availableForPurchase: string;
-  basePrice: number;
   category: string;
   changeTaxCode: boolean;
+  channelListings: ChannelData[];
   chargeTaxes: boolean;
   collections: string[];
-  description: RawDraftContentState;
+  description: OutputData;
   isAvailable: boolean;
-  isAvailableForPurchase: boolean;
-  isPublished: boolean;
   name: string;
   productType: ProductType;
-  publicationDate: string;
+  rating: number;
   seoDescription: string;
   seoTitle: string;
   sku: string;
@@ -48,30 +68,47 @@ export interface ProductCreateFormData extends MetadataFormData {
   stockQuantity: number;
   taxCode: string;
   trackInventory: boolean;
-  visibleInListings: boolean;
   weight: string;
 }
 export interface ProductCreateData extends ProductCreateFormData {
-  attributes: ProductAttributeInput[];
+  attributes: AttributeInput[];
+  attributesWithNewFileValue: FormsetData<null, File>;
   stocks: ProductStockInput[];
 }
 
-type ProductCreateHandlers = Record<
-  | "changeMetadata"
-  | "selectCategory"
-  | "selectCollection"
-  | "selectProductType"
-  | "selectTaxRate",
-  FormChange
-> &
-  Record<
-    "changeStock" | "selectAttribute" | "selectAttributeMultiple",
-    FormsetChange<string>
-  > &
-  Record<"addStock" | "deleteStock", (id: string) => void>;
+export interface ProductCreateHandlers
+  extends Record<
+      | "changeMetadata"
+      | "selectCategory"
+      | "selectCollection"
+      | "selectProductType"
+      | "selectTaxRate",
+      FormChange
+    >,
+    Record<
+      "changeStock" | "selectAttribute" | "selectAttributeMultiple",
+      FormsetChange<string>
+    >,
+    Record<"changeChannelPrice", (id: string, data: ChannelPriceArgs) => void>,
+    Record<
+      "changeChannels",
+      (
+        id: string,
+        data: Omit<ChannelData, "name" | "price" | "currency" | "id">
+      ) => void
+    >,
+    Record<"selectAttributeReference", FormsetChange<string[]>>,
+    Record<"selectAttributeFile", FormsetChange<File>>,
+    Record<"reorderAttributeValue", FormsetChange<ReorderEvent>>,
+    Record<"addStock" | "deleteStock", (id: string) => void> {
+  changeDescription: RichTextEditorChange;
+  fetchReferences: (value: string) => void;
+  fetchMoreReferences: FetchMoreProps;
+}
 export interface UseProductCreateFormResult {
   change: FormChange;
   data: ProductCreateData;
+  disabled: boolean;
   handlers: ProductCreateHandlers;
   hasChanged: boolean;
   submit: () => Promise<boolean>;
@@ -87,9 +124,19 @@ export interface UseProductCreateFormOpts
     React.SetStateAction<MultiAutocompleteChoiceType[]>
   >;
   setSelectedTaxType: React.Dispatch<React.SetStateAction<string>>;
+  setChannels: (channels: ChannelData[]) => void;
   selectedCollections: MultiAutocompleteChoiceType[];
   productTypes: SearchProductTypes_search_edges_node[];
   warehouses: SearchWarehouses_search_edges_node[];
+  currentChannels: ChannelData[];
+  productTypeChoiceList: SearchProductTypes_search_edges_node[];
+  referencePages: SearchPages_search_edges_node[];
+  referenceProducts: SearchProducts_search_edges_node[];
+  fetchReferencePages?: (data: string) => void;
+  fetchMoreReferencePages?: FetchMoreProps;
+  fetchReferenceProducts?: (data: string) => void;
+  fetchMoreReferenceProducts?: FetchMoreProps;
+  assignReferencesAttributeId?: string;
 }
 
 export interface ProductCreateFormProps extends UseProductCreateFormOpts {
@@ -98,39 +145,35 @@ export interface ProductCreateFormProps extends UseProductCreateFormOpts {
   onSubmit: (data: ProductCreateData) => Promise<boolean>;
 }
 
-const defaultInitialFormData: ProductCreateFormData &
-  Record<"productType", string> = {
-  availableForPurchase: "",
-  basePrice: 0,
-  category: "",
-  changeTaxCode: false,
-  chargeTaxes: false,
-  collections: [],
-  description: {} as any,
-  isAvailable: false,
-  isAvailableForPurchase: false,
-  isPublished: false,
-  metadata: [],
-  name: "",
-  privateMetadata: [],
-  productType: null,
-  publicationDate: "",
-  seoDescription: "",
-  seoTitle: "",
-  sku: null,
-  slug: "",
-  stockQuantity: null,
-  taxCode: null,
-  trackInventory: false,
-  visibleInListings: false,
-  weight: ""
-};
-
 function useProductCreateForm(
   initial: Partial<ProductCreateFormData>,
   onSubmit: (data: ProductCreateData) => Promise<boolean>,
   opts: UseProductCreateFormOpts
 ): UseProductCreateFormResult {
+  const defaultInitialFormData: ProductCreateFormData &
+    Record<"productType", string> = {
+    category: "",
+    changeTaxCode: false,
+    channelListings: opts.currentChannels,
+    chargeTaxes: false,
+    collections: [],
+    description: null,
+    isAvailable: false,
+    metadata: [],
+    name: "",
+    privateMetadata: [],
+    productType: null,
+    rating: 0,
+    seoDescription: "",
+    seoTitle: "",
+    sku: "",
+    slug: "",
+    stockQuantity: null,
+    taxCode: null,
+    trackInventory: false,
+    weight: ""
+  };
+
   const initialProductType =
     opts.productTypes?.find(
       productType => initial?.productType?.id === productType.id
@@ -143,15 +186,20 @@ function useProductCreateForm(
     ...initial,
     ...defaultInitialFormData
   });
-  const attributes = useFormset<ProductAttributeInputData>(
+  const attributes = useFormset<AttributeInputData>(
     initial?.productType
       ? getAttributeInputFromProductType(initialProductType)
       : []
   );
-  const stocks = useFormset<null, string>([]);
+  const attributesWithNewFileValue = useFormset<null, File>([]);
+  const stocks = useFormset<ProductStockFormsetData>([]);
   const [productType, setProductType] = useStateFromProps<ProductType>(
     initialProductType || null
   );
+  const [description, changeDescription] = useRichText({
+    initial: null,
+    triggerChange
+  });
 
   const {
     makeChangeHandler: makeMetadataChangeHandler
@@ -181,6 +229,34 @@ function useProductCreateForm(
     attributes.data,
     triggerChange
   );
+  const handleAttributeReferenceChange = createAttributeReferenceChangeHandler(
+    attributes.change,
+    triggerChange
+  );
+  const handleFetchReferences = createFetchReferencesHandler(
+    attributes.data,
+    opts.assignReferencesAttributeId,
+    opts.fetchReferencePages,
+    opts.fetchReferenceProducts
+  );
+  const handleFetchMoreReferences = createFetchMoreReferencesHandler(
+    attributes.data,
+    opts.assignReferencesAttributeId,
+    opts.fetchMoreReferencePages,
+    opts.fetchMoreReferenceProducts
+  );
+  const handleAttributeFileChange = createAttributeFileChangeHandler(
+    attributes.change,
+    attributesWithNewFileValue.data,
+    attributesWithNewFileValue.add,
+    attributesWithNewFileValue.change,
+    triggerChange
+  );
+  const handleAttributeValueReorder = createAttributeValueReorderHandler(
+    attributes.change,
+    attributes.data,
+    triggerChange
+  );
   const handleProductTypeSelect = createProductTypeSelectHandler(
     attributes.set,
     setProductType,
@@ -194,7 +270,9 @@ function useProductCreateForm(
   const handleStockAdd = (id: string) => {
     triggerChange();
     stocks.add({
-      data: null,
+      data: {
+        quantityAllocated: 0
+      },
       id,
       label: opts.warehouses.find(warehouse => warehouse.id === id).name,
       value: "0"
@@ -210,25 +288,64 @@ function useProductCreateForm(
     opts.taxTypes
   );
   const changeMetadata = makeMetadataChangeHandler(handleChange);
+  const handleChannelsChange = createChannelsChangeHandler(
+    opts.currentChannels,
+    opts.setChannels,
+    triggerChange
+  );
+  const handleChannelPriceChange = createChannelsPriceChangeHandler(
+    opts.currentChannels,
+    opts.setChannels,
+    triggerChange
+  );
 
-  const data: ProductCreateData = {
+  const getData = (): ProductCreateData => ({
     ...form.data,
-    attributes: attributes.data,
+    attributes: getAttributesDisplayData(
+      attributes.data,
+      attributesWithNewFileValue.data,
+      opts.referencePages,
+      opts.referenceProducts
+    ),
+    attributesWithNewFileValue: attributesWithNewFileValue.data,
+    description: description.current,
     productType,
     stocks: stocks.data
-  };
+  });
+  const data = getData();
   const submit = () => onSubmit(data);
+
+  const productTypeChoice = opts.productTypeChoiceList?.find(
+    choice => choice.id === data.productType?.id
+  );
+
+  const disabled =
+    !productTypeChoice?.hasVariants &&
+    (!data.sku ||
+      data.channelListings.some(
+        channel =>
+          validatePrice(channel.price) || validateCostPrice(channel.costPrice)
+      ));
 
   return {
     change: handleChange,
     data,
+    disabled,
     handlers: {
       addStock: handleStockAdd,
+      changeChannelPrice: handleChannelPriceChange,
+      changeChannels: handleChannelsChange,
+      changeDescription,
       changeMetadata,
       changeStock: handleStockChange,
       deleteStock: handleStockDelete,
+      fetchMoreReferences: handleFetchMoreReferences,
+      fetchReferences: handleFetchReferences,
+      reorderAttributeValue: handleAttributeValueReorder,
       selectAttribute: handleAttributeChange,
+      selectAttributeFile: handleAttributeFileChange,
       selectAttributeMultiple: handleAttributeMultiChange,
+      selectAttributeReference: handleAttributeReferenceChange,
       selectCategory: handleCategorySelect,
       selectCollection: handleCollectionSelect,
       selectProductType: handleProductTypeSelect,

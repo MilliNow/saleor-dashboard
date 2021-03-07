@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { ReorderInput, ProductErrorCode, AttributeInputTypeEnum, WeightUnitsEnum } from "./../../types/globalTypes";
+import { ReorderInput, ProductErrorCode, AttributeInputTypeEnum, AttributeEntityTypeEnum, WeightUnitsEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ProductVariantReorder
@@ -14,11 +14,19 @@ export interface ProductVariantReorder_productVariantReorder_errors {
   field: string | null;
 }
 
+export interface ProductVariantReorder_productVariantReorder_product_attributes_attribute_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface ProductVariantReorder_productVariantReorder_product_attributes_attribute_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantReorder_productVariantReorder_product_attributes_attribute_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_attributes_attribute {
@@ -27,8 +35,15 @@ export interface ProductVariantReorder_productVariantReorder_product_attributes_
   slug: string | null;
   name: string | null;
   inputType: AttributeInputTypeEnum | null;
+  entityType: AttributeEntityTypeEnum | null;
   valueRequired: boolean;
   values: (ProductVariantReorder_productVariantReorder_product_attributes_attribute_values | null)[] | null;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_attributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_attributes_values {
@@ -36,6 +51,8 @@ export interface ProductVariantReorder_productVariantReorder_product_attributes_
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantReorder_productVariantReorder_product_attributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_attributes {
@@ -44,11 +61,19 @@ export interface ProductVariantReorder_productVariantReorder_product_attributes 
   values: (ProductVariantReorder_productVariantReorder_product_attributes_values | null)[];
 }
 
+export interface ProductVariantReorder_productVariantReorder_product_productType_variantAttributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface ProductVariantReorder_productVariantReorder_product_productType_variantAttributes_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantReorder_productVariantReorder_product_productType_variantAttributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_productType_variantAttributes {
@@ -73,37 +98,55 @@ export interface ProductVariantReorder_productVariantReorder_product_productType
   taxType: ProductVariantReorder_productVariantReorder_product_productType_taxType | null;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_start_gross {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_start_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_start {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_start {
   __typename: "TaxedMoney";
-  gross: ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_start_gross;
+  net: ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_start_net;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_stop_gross {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_stop_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_stop {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_stop {
   __typename: "TaxedMoney";
-  gross: ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_stop_gross;
+  net: ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_stop_net;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange {
   __typename: "TaxedMoneyRange";
-  start: ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_start | null;
-  stop: ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted_stop | null;
+  start: ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_start | null;
+  stop: ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange_stop | null;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_pricing {
+export interface ProductVariantReorder_productVariantReorder_product_channelListings_pricing {
   __typename: "ProductPricingInfo";
-  priceRangeUndiscounted: ProductVariantReorder_productVariantReorder_product_pricing_priceRangeUndiscounted | null;
+  priceRange: ProductVariantReorder_productVariantReorder_product_channelListings_pricing_priceRange | null;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_channelListings {
+  __typename: "ProductChannelListing";
+  channel: ProductVariantReorder_productVariantReorder_product_channelListings_channel;
+  pricing: ProductVariantReorder_productVariantReorder_product_channelListings_pricing | null;
+  isPublished: boolean;
+  publicationDate: any | null;
+  isAvailableForPurchase: boolean | null;
+  availableForPurchase: any | null;
+  visibleInListings: boolean;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_metadata {
@@ -135,42 +178,12 @@ export interface ProductVariantReorder_productVariantReorder_product_collections
   name: string;
 }
 
-export interface ProductVariantReorder_productVariantReorder_product_margin {
-  __typename: "Margin";
-  start: number | null;
-  stop: number | null;
-}
-
-export interface ProductVariantReorder_productVariantReorder_product_purchaseCost_start {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
-export interface ProductVariantReorder_productVariantReorder_product_purchaseCost_stop {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
-export interface ProductVariantReorder_productVariantReorder_product_purchaseCost {
-  __typename: "MoneyRange";
-  start: ProductVariantReorder_productVariantReorder_product_purchaseCost_start | null;
-  stop: ProductVariantReorder_productVariantReorder_product_purchaseCost_stop | null;
-}
-
 export interface ProductVariantReorder_productVariantReorder_product_images {
   __typename: "ProductImage";
   id: string;
   alt: string;
   sortOrder: number | null;
   url: string;
-}
-
-export interface ProductVariantReorder_productVariantReorder_product_variants_price {
-  __typename: "Money";
-  amount: number;
-  currency: string;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_variants_stocks_warehouse {
@@ -187,15 +200,41 @@ export interface ProductVariantReorder_productVariantReorder_product_variants_st
   warehouse: ProductVariantReorder_productVariantReorder_product_variants_stocks_warehouse;
 }
 
+export interface ProductVariantReorder_productVariantReorder_product_variants_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_variants_channelListings_price {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_variants_channelListings_costPrice {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface ProductVariantReorder_productVariantReorder_product_variants_channelListings {
+  __typename: "ProductVariantChannelListing";
+  channel: ProductVariantReorder_productVariantReorder_product_variants_channelListings_channel;
+  price: ProductVariantReorder_productVariantReorder_product_variants_channelListings_price | null;
+  costPrice: ProductVariantReorder_productVariantReorder_product_variants_channelListings_costPrice | null;
+}
+
 export interface ProductVariantReorder_productVariantReorder_product_variants {
   __typename: "ProductVariant";
   id: string;
   sku: string;
   name: string;
-  price: ProductVariantReorder_productVariantReorder_product_variants_price | null;
   margin: number | null;
   stocks: (ProductVariantReorder_productVariantReorder_product_variants_stocks | null)[] | null;
   trackInventory: boolean;
+  channelListings: ProductVariantReorder_productVariantReorder_product_variants_channelListings[] | null;
 }
 
 export interface ProductVariantReorder_productVariantReorder_product_weight {
@@ -215,30 +254,24 @@ export interface ProductVariantReorder_productVariantReorder_product {
   id: string;
   attributes: ProductVariantReorder_productVariantReorder_product_attributes[];
   productType: ProductVariantReorder_productVariantReorder_product_productType;
-  pricing: ProductVariantReorder_productVariantReorder_product_pricing | null;
+  channelListings: ProductVariantReorder_productVariantReorder_product_channelListings[] | null;
   metadata: (ProductVariantReorder_productVariantReorder_product_metadata | null)[];
   privateMetadata: (ProductVariantReorder_productVariantReorder_product_privateMetadata | null)[];
   name: string;
   slug: string;
-  descriptionJson: any;
+  description: any | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  rating: number | null;
   defaultVariant: ProductVariantReorder_productVariantReorder_product_defaultVariant | null;
   category: ProductVariantReorder_productVariantReorder_product_category | null;
   collections: (ProductVariantReorder_productVariantReorder_product_collections | null)[] | null;
-  margin: ProductVariantReorder_productVariantReorder_product_margin | null;
-  purchaseCost: ProductVariantReorder_productVariantReorder_product_purchaseCost | null;
-  isAvailableForPurchase: boolean | null;
-  isAvailable: boolean | null;
-  isPublished: boolean;
   chargeTaxes: boolean;
-  publicationDate: any | null;
   images: (ProductVariantReorder_productVariantReorder_product_images | null)[] | null;
+  isAvailable: boolean | null;
   variants: (ProductVariantReorder_productVariantReorder_product_variants | null)[] | null;
   weight: ProductVariantReorder_productVariantReorder_product_weight | null;
   taxType: ProductVariantReorder_productVariantReorder_product_taxType | null;
-  availableForPurchase: any | null;
-  visibleInListings: boolean;
 }
 
 export interface ProductVariantReorder_productVariantReorder {

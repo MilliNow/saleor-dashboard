@@ -3,7 +3,11 @@ import {
   SearchProductTypes_search_edges_node_productAttributes
 } from "@saleor/searches/types/SearchProductTypes";
 
-import { AttributeInputTypeEnum, WeightUnitsEnum } from "../types/globalTypes";
+import {
+  AttributeInputTypeEnum,
+  AttributeTypeEnum,
+  WeightUnitsEnum
+} from "../types/globalTypes";
 import { ProductTypeDetails_productType } from "./types/ProductTypeDetails";
 import { ProductTypeList_productTypes_edges_node } from "./types/ProductTypeList";
 
@@ -11,6 +15,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo5",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Author",
@@ -19,8 +24,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI0",
           name: "John Doe",
+          reference: null,
           slug: "john-doe",
           sortOrder: 0,
           type: "STRING",
@@ -28,8 +35,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI1",
           name: "Milionare Pirate",
+          reference: null,
           slug: "milionare-pirate",
           sortOrder: 1,
           type: "STRING",
@@ -41,6 +50,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo2",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Box Size",
@@ -49,8 +59,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE1",
           name: "100g",
+          reference: null,
           slug: "100g",
           sortOrder: 0,
           type: "STRING",
@@ -58,8 +70,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE2",
           name: "250g",
+          reference: null,
           slug: "250g",
           sortOrder: 1,
           type: "STRING",
@@ -67,8 +81,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE3",
           name: "500g",
+          reference: null,
           slug: "500g",
           sortOrder: 2,
           type: "STRING",
@@ -76,8 +92,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE4",
           name: "1kg",
+          reference: null,
           slug: "1kg",
           sortOrder: 3,
           type: "STRING",
@@ -89,6 +107,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZToz",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Brand",
@@ -97,8 +116,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjY=",
           name: "Saleor",
+          reference: null,
           slug: "saleor",
           sortOrder: 0,
           type: "STRING",
@@ -110,6 +131,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo4",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Candy Box Size",
@@ -118,8 +140,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjIx",
           name: "100g",
+          reference: null,
           slug: "100g",
           sortOrder: 0,
           type: "STRING",
@@ -127,8 +151,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjIy",
           name: "250g",
+          reference: null,
           slug: "250g",
           sortOrder: 1,
           type: "STRING",
@@ -136,8 +162,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjIz",
           name: "500g",
+          reference: null,
           slug: "500g",
           sortOrder: 2,
           type: "STRING",
@@ -149,6 +177,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo1",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Coffee Genre",
@@ -157,8 +186,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjEz",
           name: "Arabica",
+          reference: null,
           slug: "arabica",
           sortOrder: 0,
           type: "STRING",
@@ -166,8 +197,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE0",
           name: "Robusta",
+          reference: null,
           slug: "robusta",
           sortOrder: 1,
           type: "STRING",
@@ -179,6 +212,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZToy",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Collar",
@@ -187,8 +221,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjM=",
           name: "Round",
+          reference: null,
           slug: "round",
           sortOrder: 0,
           type: "STRING",
@@ -196,8 +232,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjQ=",
           name: "V-Neck",
+          reference: null,
           slug: "v-neck",
           sortOrder: 1,
           type: "STRING",
@@ -205,8 +243,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjU=",
           name: "Polo",
+          reference: null,
           slug: "polo",
           sortOrder: 2,
           type: "STRING",
@@ -218,6 +258,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTox",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Color",
@@ -226,8 +267,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE=",
           name: "Blue",
+          reference: null,
           slug: "blue",
           sortOrder: 0,
           type: "STRING",
@@ -235,8 +278,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI=",
           name: "White",
+          reference: null,
           slug: "white",
           sortOrder: 1,
           type: "STRING",
@@ -248,6 +293,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZToxMg==",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Cover",
@@ -256,8 +302,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjMw",
           name: "Soft",
+          reference: null,
           slug: "soft",
           sortOrder: 0,
           type: "STRING",
@@ -265,8 +313,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjMx",
           name: "Hard",
+          reference: null,
           slug: "hard",
           sortOrder: 1,
           type: "STRING",
@@ -274,8 +324,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjMy",
           name: "Middle soft",
+          reference: null,
           slug: "middle-soft",
           sortOrder: 2,
           type: "STRING",
@@ -283,8 +335,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjMz",
           name: "Middle hard",
+          reference: null,
           slug: "middle-hard",
           sortOrder: 3,
           type: "STRING",
@@ -292,8 +346,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjM0",
           name: "Middle",
+          reference: null,
           slug: "middle",
           sortOrder: 4,
           type: "STRING",
@@ -301,8 +357,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjM1",
           name: "Very hard",
+          reference: null,
           slug: "very-hard",
           sortOrder: 5,
           type: "STRING",
@@ -314,6 +372,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo3",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Flavor",
@@ -322,8 +381,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjE5",
           name: "Sour",
+          reference: null,
           slug: "sour",
           sortOrder: 0,
           type: "STRING",
@@ -331,8 +392,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjIw",
           name: "Sweet",
+          reference: null,
           slug: "sweet",
           sortOrder: 1,
           type: "STRING",
@@ -344,6 +407,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZToxMQ==",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Language",
@@ -352,8 +416,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI4",
           name: "English",
+          reference: null,
           slug: "english",
           sortOrder: 0,
           type: "STRING",
@@ -361,8 +427,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI5",
           name: "Pirate",
+          reference: null,
           slug: "pirate",
           sortOrder: 1,
           type: "STRING",
@@ -374,6 +442,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZToxMA==",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Publisher",
@@ -382,8 +451,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI2",
           name: "Mirumee Press",
+          reference: null,
           slug: "mirumee-press",
           sortOrder: 0,
           type: "STRING",
@@ -391,8 +462,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjI3",
           name: "Saleor Publishing",
+          reference: null,
           slug: "saleor-publishing",
           sortOrder: 1,
           type: "STRING",
@@ -404,6 +477,7 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
   {
     node: {
       __typename: "Attribute" as "Attribute",
+      entityType: null,
       id: "UHJvZHVjdEF0dHJpYnV0ZTo0",
       inputType: AttributeInputTypeEnum.DROPDOWN,
       name: "Size",
@@ -412,8 +486,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
       values: [
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjc=",
           name: "XS",
+          reference: null,
           slug: "xs",
           sortOrder: 0,
           type: "STRING",
@@ -421,8 +497,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjg=",
           name: "S",
+          reference: null,
           slug: "s",
           sortOrder: 1,
           type: "STRING",
@@ -430,8 +508,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjk=",
           name: "M",
+          reference: null,
           slug: "m",
           sortOrder: 2,
           type: "STRING",
@@ -439,8 +519,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjEw",
           name: "L",
+          reference: null,
           slug: "l",
           sortOrder: 3,
           type: "STRING",
@@ -448,8 +530,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjEx",
           name: "XL",
+          reference: null,
           slug: "xl",
           sortOrder: 4,
           type: "STRING",
@@ -457,8 +541,10 @@ export const attributes: SearchProductTypes_search_edges_node_productAttributes[
         },
         {
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: "UHJvZHVjdEF0dHJpYnV0ZVZhbHVlOjEy",
           name: "XXL",
+          reference: null,
           slug: "xxl",
           sortOrder: 5,
           type: "STRING",
@@ -567,6 +653,7 @@ export const productType: ProductTypeDetails_productType = {
       id: "UHJvZHVjdEF0dHJpYnV0ZTo5",
       name: "Author",
       slug: "author",
+      type: AttributeTypeEnum.PRODUCT_TYPE,
       visibleInStorefront: true
     },
     {
@@ -576,6 +663,7 @@ export const productType: ProductTypeDetails_productType = {
       id: "UHJvZHVjdEF0dHJpYnV0ZToxMQ==",
       name: "Language",
       slug: "language",
+      type: AttributeTypeEnum.PRODUCT_TYPE,
       visibleInStorefront: true
     },
     {
@@ -585,6 +673,7 @@ export const productType: ProductTypeDetails_productType = {
       id: "UHJvZHVjdEF0dHJpYnV0ZToxMA==",
       name: "Publisher",
       slug: "publisher",
+      type: AttributeTypeEnum.PRODUCT_TYPE,
       visibleInStorefront: true
     }
   ],
@@ -598,12 +687,14 @@ export const productType: ProductTypeDetails_productType = {
       ...attributes[1],
       filterableInDashboard: true,
       filterableInStorefront: false,
+      type: AttributeTypeEnum.PRODUCT_TYPE,
       visibleInStorefront: true
     },
     {
       ...attributes[6],
       filterableInDashboard: true,
       filterableInStorefront: false,
+      type: AttributeTypeEnum.PRODUCT_TYPE,
       visibleInStorefront: true
     }
   ],

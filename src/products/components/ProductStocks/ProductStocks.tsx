@@ -33,7 +33,13 @@ import createNonNegativeValueChangeHandler from "@saleor/utils/handlers/nonNegat
 import React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-export type ProductStockInput = FormsetAtomicData<null, string>;
+export interface ProductStockFormsetData {
+  quantityAllocated: number;
+}
+export type ProductStockInput = FormsetAtomicData<
+  ProductStockFormsetData,
+  string
+>;
 export interface ProductStockFormData {
   sku: string;
   trackInventory: boolean;
@@ -62,7 +68,7 @@ const useStyles = makeStyles(
     colName: {},
     colQuantity: {
       textAlign: "right",
-      width: 200
+      width: 150
     },
     editWarehouses: {
       marginRight: -theme.spacing()
@@ -70,9 +76,6 @@ const useStyles = makeStyles(
     input: {
       padding: theme.spacing(1.5),
       textAlign: "right"
-    },
-    inputComponent: {
-      width: 100
     },
     menuItem: {
       "&:not(:last-of-type)": {
@@ -153,6 +156,7 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
               defaultMessage: "SKU (Stock Keeping Unit)"
             })}
             name="sku"
+            required
             onChange={onFormDataChange}
             value={data.sku}
           />
@@ -222,6 +226,11 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
       </CardContent>
       {warehouses?.length > 0 && (
         <Table>
+          <colgroup>
+            <col className={classes.colName} />
+            <col className={classes.colQuantity} />
+            <col className={classes.colQuantity} />
+          </colgroup>
           <TableHead>
             <TableRow>
               <TableCell className={classes.colName}>
@@ -232,8 +241,16 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
               </TableCell>
               <TableCell className={classes.colQuantity}>
                 <FormattedMessage
-                  defaultMessage="Quantity Available"
-                  description="tabel column header"
+                  defaultMessage="Allocated"
+                  description="table column header, allocated product quantity"
+                  id="tableColAllocated"
+                />
+              </TableCell>
+              <TableCell className={classes.colQuantity}>
+                <FormattedMessage
+                  defaultMessage="Quantity"
+                  description="table column header"
+                  id="tableColQuantity"
                 />
               </TableCell>
               <TableCell className={classes.colAction} />
@@ -251,8 +268,10 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
                     {stock.label}
                   </TableCell>
                   <TableCell className={classes.colQuantity}>
+                    {stock.data?.quantityAllocated || 0}
+                  </TableCell>
+                  <TableCell className={classes.colQuantity}>
                     <TextField
-                      className={classes.inputComponent}
                       disabled={disabled}
                       fullWidth
                       inputProps={{
@@ -277,7 +296,7 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
             })}
             {warehousesToAssign.length > 0 && (
               <TableRow>
-                <TableCell colSpan={2}>
+                <TableCell colSpan={3}>
                   <Typography variant="body2">
                     <FormattedMessage
                       defaultMessage="Assign Warehouse"
@@ -291,6 +310,7 @@ const ProductStocks: React.FC<ProductStocksProps> = ({
                   >
                     <div ref={anchor}>
                       <IconButton
+                        data-test-id="add-warehouse"
                         color="primary"
                         onClick={() => setExpansionState(!isExpanded)}
                       >

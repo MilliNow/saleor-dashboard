@@ -14,19 +14,24 @@ export interface CategoryTranslationFragment_translation_language {
 export interface CategoryTranslationFragment_translation {
   __typename: "CategoryTranslation";
   id: string;
-  descriptionJson: any;
+  description: any | null;
   language: CategoryTranslationFragment_translation_language;
   name: string;
   seoDescription: string | null;
   seoTitle: string | null;
 }
 
-export interface CategoryTranslationFragment {
+export interface CategoryTranslationFragment_category {
   __typename: "Category";
   id: string;
   name: string;
-  descriptionJson: any;
+  description: any | null;
   seoDescription: string | null;
   seoTitle: string | null;
+}
+
+export interface CategoryTranslationFragment {
+  __typename: "CategoryTranslatableContent";
   translation: CategoryTranslationFragment_translation | null;
+  category: CategoryTranslationFragment_category | null;
 }

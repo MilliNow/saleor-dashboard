@@ -2,17 +2,25 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeInputTypeEnum } from "./../../types/globalTypes";
+import { AttributeInputTypeEnum, AttributeEntityTypeEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL fragment: ProductVariantAttributesFragment
 // ====================================================
+
+export interface ProductVariantAttributesFragment_attributes_attribute_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
 
 export interface ProductVariantAttributesFragment_attributes_attribute_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantAttributesFragment_attributes_attribute_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantAttributesFragment_attributes_attribute {
@@ -21,8 +29,15 @@ export interface ProductVariantAttributesFragment_attributes_attribute {
   slug: string | null;
   name: string | null;
   inputType: AttributeInputTypeEnum | null;
+  entityType: AttributeEntityTypeEnum | null;
   valueRequired: boolean;
   values: (ProductVariantAttributesFragment_attributes_attribute_values | null)[] | null;
+}
+
+export interface ProductVariantAttributesFragment_attributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
 }
 
 export interface ProductVariantAttributesFragment_attributes_values {
@@ -30,6 +45,8 @@ export interface ProductVariantAttributesFragment_attributes_values {
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantAttributesFragment_attributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantAttributesFragment_attributes {
@@ -38,11 +55,19 @@ export interface ProductVariantAttributesFragment_attributes {
   values: (ProductVariantAttributesFragment_attributes_values | null)[];
 }
 
+export interface ProductVariantAttributesFragment_productType_variantAttributes_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface ProductVariantAttributesFragment_productType_variantAttributes_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
+  file: ProductVariantAttributesFragment_productType_variantAttributes_values_file | null;
+  reference: string | null;
 }
 
 export interface ProductVariantAttributesFragment_productType_variantAttributes {
@@ -58,37 +83,50 @@ export interface ProductVariantAttributesFragment_productType {
   variantAttributes: (ProductVariantAttributesFragment_productType_variantAttributes | null)[] | null;
 }
 
-export interface ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_start_gross {
+export interface ProductVariantAttributesFragment_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface ProductVariantAttributesFragment_channelListings_pricing_priceRange_start_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_start {
+export interface ProductVariantAttributesFragment_channelListings_pricing_priceRange_start {
   __typename: "TaxedMoney";
-  gross: ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_start_gross;
+  net: ProductVariantAttributesFragment_channelListings_pricing_priceRange_start_net;
 }
 
-export interface ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_stop_gross {
+export interface ProductVariantAttributesFragment_channelListings_pricing_priceRange_stop_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_stop {
+export interface ProductVariantAttributesFragment_channelListings_pricing_priceRange_stop {
   __typename: "TaxedMoney";
-  gross: ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_stop_gross;
+  net: ProductVariantAttributesFragment_channelListings_pricing_priceRange_stop_net;
 }
 
-export interface ProductVariantAttributesFragment_pricing_priceRangeUndiscounted {
+export interface ProductVariantAttributesFragment_channelListings_pricing_priceRange {
   __typename: "TaxedMoneyRange";
-  start: ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_start | null;
-  stop: ProductVariantAttributesFragment_pricing_priceRangeUndiscounted_stop | null;
+  start: ProductVariantAttributesFragment_channelListings_pricing_priceRange_start | null;
+  stop: ProductVariantAttributesFragment_channelListings_pricing_priceRange_stop | null;
 }
 
-export interface ProductVariantAttributesFragment_pricing {
+export interface ProductVariantAttributesFragment_channelListings_pricing {
   __typename: "ProductPricingInfo";
-  priceRangeUndiscounted: ProductVariantAttributesFragment_pricing_priceRangeUndiscounted | null;
+  priceRange: ProductVariantAttributesFragment_channelListings_pricing_priceRange | null;
+}
+
+export interface ProductVariantAttributesFragment_channelListings {
+  __typename: "ProductChannelListing";
+  channel: ProductVariantAttributesFragment_channelListings_channel;
+  pricing: ProductVariantAttributesFragment_channelListings_pricing | null;
 }
 
 export interface ProductVariantAttributesFragment {
@@ -96,5 +134,5 @@ export interface ProductVariantAttributesFragment {
   id: string;
   attributes: ProductVariantAttributesFragment_attributes[];
   productType: ProductVariantAttributesFragment_productType;
-  pricing: ProductVariantAttributesFragment_pricing | null;
+  channelListings: ProductVariantAttributesFragment_channelListings[] | null;
 }

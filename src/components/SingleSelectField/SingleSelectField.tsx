@@ -18,6 +18,9 @@ const useStyles = makeStyles(
       },
       width: "100%"
     },
+    label: {
+      zIndex: 3
+    },
     noLabel: {
       padding: theme.spacing(2, 1.5)
     }
@@ -25,11 +28,15 @@ const useStyles = makeStyles(
   { name: "SingleSelectField" }
 );
 
+export interface Choice {
+  value: string;
+  label: string | React.ReactNode;
+}
+
+export type Choices = Choice[];
 interface SingleSelectFieldProps {
-  choices: Array<{
-    value: string;
-    label: string | React.ReactNode;
-  }>;
+  testId?: string;
+  choices: Choices;
   className?: string;
   disabled?: boolean;
   error?: boolean;
@@ -56,7 +63,8 @@ export const SingleSelectField: React.FC<SingleSelectFieldProps> = props => {
     hint,
     selectProps,
     placeholder,
-    InputProps
+    InputProps,
+    testId
   } = props;
   const classes = useStyles(props);
 
@@ -74,8 +82,11 @@ export const SingleSelectField: React.FC<SingleSelectFieldProps> = props => {
       error={error}
       disabled={disabled}
     >
-      <InputLabel shrink={!!value}>{label}</InputLabel>
+      <InputLabel className={classes.label} shrink={!!value}>
+        {label}
+      </InputLabel>
       <Select
+        data-test-id={testId}
         variant="outlined"
         fullWidth
         renderValue={choiceValue =>

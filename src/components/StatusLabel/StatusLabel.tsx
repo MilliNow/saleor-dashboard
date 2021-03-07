@@ -1,3 +1,4 @@
+import grey from "@material-ui/core/colors/grey";
 import yellow from "@material-ui/core/colors/yellow";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography, { TypographyProps } from "@material-ui/core/Typography";
@@ -18,11 +19,14 @@ const useStyles = makeStyles(
     };
 
     return {
+      alertDot: {
+        "&:before": { backgroundColor: yellow[500], ...dot }
+      },
       errorDot: {
         "&:before": { backgroundColor: theme.palette.error.main, ...dot }
       },
       neutralDot: {
-        "&:before": { backgroundColor: yellow[500], ...dot }
+        "&:before": { backgroundColor: grey[300], ...dot }
       },
       root: {
         display: "inline-block",
@@ -43,7 +47,7 @@ const useStyles = makeStyles(
 interface StatusLabelProps {
   className?: string;
   label: string | React.ReactNode;
-  status: "success" | "neutral" | "error" | string;
+  status: "success" | "alert" | "neutral" | "error" | string;
   typographyProps?: TypographyProps;
 }
 
@@ -58,6 +62,7 @@ const StatusLabel: React.FC<StatusLabelProps> = props => {
         [classes.root]: true,
         [className]: true,
         [classes.successDot]: status === "success",
+        [classes.alertDot]: status === "alert",
         [classes.neutralDot]: status === "neutral",
         [classes.errorDot]: status === "error"
       })}

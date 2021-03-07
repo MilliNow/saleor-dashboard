@@ -1,3 +1,5 @@
+import { channelsList } from "@saleor/channels/fixtures";
+import { createChannelsData } from "@saleor/channels/utils";
 import { fetchMoreProps } from "@saleor/fixtures";
 import { ProductErrorCode } from "@saleor/types/globalTypes";
 import { warehouseList } from "@saleor/warehouses/fixtures";
@@ -13,13 +15,16 @@ import Decorator from "../../Decorator";
 import { taxTypes } from "../taxes/fixtures";
 
 const product = productFixture("");
+const channels = createChannelsData(channelsList);
 
 storiesOf("Views / Products / Create product", module)
   .addDecorator(Decorator)
   .add("default", () => (
     <ProductCreatePage
-      currency="USD"
-      disabled={false}
+      channelsErrors={[]}
+      currentChannels={channels}
+      allChannelsCount={5}
+      loading={false}
       errors={[]}
       header="Add product"
       collections={product.collections}
@@ -32,18 +37,26 @@ storiesOf("Views / Products / Create product", module)
       productTypes={productTypes}
       categories={[product.category]}
       onBack={() => undefined}
+      onChannelsChange={() => undefined}
       onSubmit={() => undefined}
+      openChannelsModal={() => undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
       onWarehouseConfigure={() => undefined}
       taxTypes={taxTypes}
       weightUnit="kg"
+      referencePages={[]}
+      referenceProducts={[]}
+      onAssignReferencesClick={() => undefined}
+      onCloseDialog={() => undefined}
     />
   ))
   .add("When loading", () => (
     <ProductCreatePage
-      currency="USD"
-      disabled={true}
+      channelsErrors={[]}
+      currentChannels={channels}
+      allChannelsCount={5}
+      loading={true}
       errors={[]}
       header="Add product"
       collections={product.collections}
@@ -56,18 +69,26 @@ storiesOf("Views / Products / Create product", module)
       productTypes={productTypes}
       categories={[product.category]}
       onBack={() => undefined}
+      onChannelsChange={() => undefined}
       onSubmit={() => undefined}
+      openChannelsModal={() => undefined}
       saveButtonBarState="default"
       warehouses={undefined}
       onWarehouseConfigure={() => undefined}
       taxTypes={taxTypes}
       weightUnit="kg"
+      referencePages={[]}
+      referenceProducts={[]}
+      onAssignReferencesClick={() => undefined}
+      onCloseDialog={() => undefined}
     />
   ))
   .add("form errors", () => (
     <ProductCreatePage
-      currency="USD"
-      disabled={false}
+      channelsErrors={[]}
+      currentChannels={channels}
+      allChannelsCount={5}
+      loading={false}
       errors={([
         "attributes",
         "name",
@@ -97,11 +118,17 @@ storiesOf("Views / Products / Create product", module)
       productTypes={productTypes}
       categories={[product.category]}
       onBack={() => undefined}
+      onChannelsChange={() => undefined}
       onSubmit={() => undefined}
+      openChannelsModal={() => undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
       onWarehouseConfigure={() => undefined}
       taxTypes={taxTypes}
       weightUnit="kg"
+      referencePages={[]}
+      referenceProducts={[]}
+      onAssignReferencesClick={() => undefined}
+      onCloseDialog={() => undefined}
     />
   ));

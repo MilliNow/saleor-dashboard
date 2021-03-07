@@ -10,12 +10,12 @@ export const orderToFulfill: OrderFulfillData_order = {
   lines: [
     {
       __typename: "OrderLine",
+      allocations: [],
       id: "T3JkZXJMaW5lOjQ=",
       isShippingRequired: true,
       productName: "T-Shirt",
       quantity: 3,
       quantityFulfilled: 1,
-      allocations: [],
       variant: {
         __typename: "ProductVariant",
         id: "UHJvZHVjdFZhcmlhbnQ6Mjk2",
@@ -67,17 +67,17 @@ export const orderToFulfill: OrderFulfillData_order = {
       },
       thumbnail: {
         __typename: "Image",
-        url: placeholderImage
+        url: placeholderImage.default
       }
     },
     {
       __typename: "OrderLine",
+      allocations: [],
       id: "T3JkZXJMaW5lOjU=",
       isShippingRequired: true,
       productName: "Lemon Juice",
       quantity: 4,
       quantityFulfilled: 0,
-      allocations: [],
       variant: {
         __typename: "ProductVariant",
         id: "UHJvZHVjdFZhcmlhbnQ6MTgx",
@@ -122,17 +122,17 @@ export const orderToFulfill: OrderFulfillData_order = {
       },
       thumbnail: {
         __typename: "Image",
-        url: placeholderImage
+        url: placeholderImage.default
       }
     },
     {
       __typename: "OrderLine",
+      allocations: [],
       id: "T3JkZXJMaW5lOjY=",
       isShippingRequired: true,
       productName: "Orange Juice",
       quantity: 3,
       quantityFulfilled: 2,
-      allocations: [],
       variant: {
         __typename: "ProductVariant",
         id: "UHJvZHVjdFZhcmlhbnQ6MTgy",
@@ -170,7 +170,7 @@ export const orderToFulfill: OrderFulfillData_order = {
       },
       thumbnail: {
         __typename: "Image",
-        url: placeholderImage
+        url: placeholderImage.default
       }
     }
   ],

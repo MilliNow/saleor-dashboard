@@ -4,6 +4,7 @@ import { defineMessages, IntlShape } from "react-intl";
 import urlJoin from "url-join";
 
 import { ConfirmButtonTransitionState } from "./components/ConfirmButton/ConfirmButton";
+import { StatusType } from "./components/StatusChip/types";
 import { APP_MOUNT_URI } from "./config";
 import { AddressType, AddressTypeInput } from "./customers/types";
 import {
@@ -13,7 +14,6 @@ import {
 } from "./types";
 import {
   AddressInput,
-  AuthorizationKeyType,
   CountryCode,
   OrderStatus,
   PaymentChargeStatusEnum
@@ -136,6 +136,10 @@ export const orderStatusMessages = defineMessages({
     defaultMessage: "Partially fulfilled",
     description: "order status"
   },
+  partiallyReturned: {
+    defaultMessage: "Partially returned",
+    description: "order status"
+  },
   readyToCapture: {
     defaultMessage: "Ready to capture",
     description: "order status"
@@ -144,64 +148,85 @@ export const orderStatusMessages = defineMessages({
     defaultMessage: "Ready to fulfill",
     description: "order status"
   },
+  returned: {
+    defaultMessage: "Returned",
+    description: "order status"
+  },
+  unconfirmed: {
+    defaultMessage: "Unconfirmed",
+    description: "order status"
+  },
   unfulfilled: {
     defaultMessage: "Unfulfilled",
     description: "order status"
   }
 });
 
-export const transformOrderStatus = (status: string, intl: IntlShape) => {
+export const transformOrderStatus = (
+  status: string,
+  intl: IntlShape
+): { localized: string; status: StatusType } => {
   switch (status) {
     case OrderStatus.FULFILLED:
       return {
         localized: intl.formatMessage(orderStatusMessages.fulfilled),
-        status: "success"
+        status: StatusType.SUCCESS
       };
     case OrderStatus.PARTIALLY_FULFILLED:
       return {
         localized: intl.formatMessage(orderStatusMessages.partiallyFulfilled),
-        status: "neutral"
+        status: StatusType.NEUTRAL
       };
     case OrderStatus.UNFULFILLED:
       return {
         localized: intl.formatMessage(orderStatusMessages.unfulfilled),
-        status: "error"
+        status: StatusType.ERROR
       };
     case OrderStatus.CANCELED:
       return {
         localized: intl.formatMessage(orderStatusMessages.cancelled),
-        status: "error"
+        status: StatusType.ERROR
       };
     case OrderStatus.DRAFT:
       return {
         localized: intl.formatMessage(orderStatusMessages.draft),
-        status: "error"
+        status: StatusType.ERROR
+      };
+    case OrderStatus.UNCONFIRMED:
+      return {
+        localized: intl.formatMessage(orderStatusMessages.unconfirmed),
+        status: StatusType.NEUTRAL
+      };
+    case OrderStatus.PARTIALLY_RETURNED:
+      return {
+        localized: intl.formatMessage(orderStatusMessages.partiallyReturned),
+        status: StatusType.NEUTRAL
+      };
+    case OrderStatus.RETURNED:
+      return {
+        localized: intl.formatMessage(orderStatusMessages.returned),
+        status: StatusType.NEUTRAL
       };
   }
   return {
     localized: status,
-    status: "error"
+    status: StatusType.ERROR
   };
 };
 
 export const transformAddressToForm = (data: AddressType) => ({
-  city: maybe(() => data.city, ""),
-  cityArea: maybe(() => data.cityArea, ""),
-  companyName: maybe(() => data.companyName, ""),
-  country: maybe(() => data.country.code, ""),
-  countryArea: maybe(() => data.countryArea, ""),
-  firstName: maybe(() => data.firstName, ""),
-  lastName: maybe(() => data.lastName, ""),
-  phone: maybe(() => data.phone, ""),
-  postalCode: maybe(() => data.postalCode, ""),
-  streetAddress1: maybe(() => data.streetAddress1, ""),
-  streetAddress2: maybe(() => data.streetAddress2, "")
+  city: data?.city || "",
+  cityArea: data?.cityArea || "",
+  companyName: data?.companyName || "",
+  country: data?.country?.code || "",
+  countryArea: data?.countryArea || "",
+  firstName: data?.firstName || "",
+  lastName: data?.lastName || "",
+  phone: data?.phone || "",
+  postalCode: data?.postalCode || "",
+  streetAddress1: data?.streetAddress1 || "",
+  streetAddress2: data?.streetAddress2 || ""
 });
-
-export const authorizationKeyTypes = {
-  [AuthorizationKeyType.FACEBOOK]: "Facebook",
-  [AuthorizationKeyType.GOOGLE_OAUTH2]: "Google OAuth2"
-};
 
 export function maybe<T>(exp: () => T): T | undefined;
 export function maybe<T>(exp: () => T, d: T): T;
@@ -251,15 +276,18 @@ export function getMutationState(
 interface SaleorMutationResult {
   errors?: UserError[];
 }
+export function getMutationErrors<
+  TData extends Record<string, SaleorMutationResult>
+>(data: TData): UserError[] {
+  return Object.values(data).reduce(
+    (acc: UserError[], mut) => [...acc, ...maybe(() => mut.errors, [])],
+    []
+  );
+}
 export function getMutationStatus<
   TData extends Record<string, SaleorMutationResult | any>
 >(opts: MutationResult<TData>): ConfirmButtonTransitionState {
-  const errors = opts.data
-    ? Object.values(opts.data).reduce(
-        (acc: UserError[], mut) => [...acc, ...maybe(() => mut.errors, [])],
-        []
-      )
-    : [];
+  const errors = opts.data ? getMutationErrors(opts.data) : [];
 
   return getMutationState(opts.called, opts.loading, errors);
 }

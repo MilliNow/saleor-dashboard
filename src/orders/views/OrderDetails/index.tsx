@@ -10,8 +10,12 @@ import useUser from "@saleor/hooks/useUser";
 import { commonMessages } from "@saleor/intl";
 import OrderCannotCancelOrderDialog from "@saleor/orders/components/OrderCannotCancelOrderDialog";
 import OrderInvoiceEmailSendDialog from "@saleor/orders/components/OrderInvoiceEmailSendDialog";
+import { useOrderConfirmMutation } from "@saleor/orders/mutations";
 import { InvoiceRequest } from "@saleor/orders/types/InvoiceRequest";
+import { OrderDiscountProvider } from "@saleor/products/components/OrderDiscountProviders/OrderDiscountProvider";
+import { OrderLineDiscountProvider } from "@saleor/products/components/OrderDiscountProviders/OrderLineDiscountProvider";
 import useCustomerSearch from "@saleor/searches/useCustomerSearch";
+import getOrderErrorMessage from "@saleor/utils/errors/order";
 import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
 import createMetadataUpdateHandler from "@saleor/utils/handlers/metadataUpdateHandler";
 import {
@@ -47,6 +51,8 @@ import {
   orderDraftListUrl,
   orderFulfillUrl,
   orderListUrl,
+  orderRefundUrl,
+  orderReturnPath,
   orderUrl,
   OrderUrlDialog,
   OrderUrlQueryParams
@@ -62,6 +68,7 @@ interface OrderDetailsProps {
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
   const navigate = useNavigator();
   const { user } = useUser();
+
   const {
     loadMore: loadMoreCustomers,
     search: searchUsers,
@@ -69,6 +76,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
   } = useCustomerSearch({
     variables: DEFAULT_INITIAL_SEARCH_DATA
   });
+
   const {
     loadMore,
     search: variantSearch,
@@ -90,6 +98,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
     updatePrivateMetadataOpts
   ] = usePrivateMetadataUpdate({});
   const notify = useNotifier();
+  const [transactionReference, setTransactionReference] = React.useState("");
 
   const [openModal, closeModal] = createDialogActionHandlers<
     OrderUrlDialog,
@@ -98,16 +107,32 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
 
   const handleBack = () => navigate(orderListUrl());
 
+  const [orderConfirm] = useOrderConfirmMutation({
+    onCompleted: ({ orderConfirm: { errors } }) => {
+      const isError = !!errors.length;
+
+      notify({
+        status: isError ? "error" : "success",
+        text: isError
+          ? getOrderErrorMessage(errors[0], intl)
+          : "Confirmed Order"
+      });
+    }
+  });
+
   return (
     <TypedOrderDetailsQuery displayLoader variables={{ id }}>
       {({ data, loading }) => {
         const order = data?.order;
-
         if (order === null) {
           return <NotFoundPage onBack={handleBack} />;
         }
 
         const handleSubmit = async (data: MetadataFormData) => {
+          if (order?.status === OrderStatus.UNCONFIRMED) {
+            await orderConfirm({ variables: { id: order?.id } });
+          }
+
           const update = createMetadataUpdateHandler(
             order,
             () => Promise.resolve([]),
@@ -135,7 +160,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                 onOrderCancel={orderMessages.handleOrderCancel}
                 onOrderVoid={orderMessages.handleOrderVoid}
                 onPaymentCapture={orderMessages.handlePaymentCapture}
-                onPaymentRefund={orderMessages.handlePaymentRefund}
                 onUpdate={orderMessages.handleUpdate}
                 onDraftUpdate={orderMessages.handleDraftUpdate}
                 onShippingMethodUpdate={
@@ -178,7 +202,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                   orderLineDelete,
                   orderLineUpdate,
                   orderPaymentCapture,
-                  orderPaymentRefund,
                   orderVoid,
                   orderShippingMethodUpdate,
                   orderUpdate,
@@ -207,6 +230,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                           )}
                         />
                         <OrderDetailsPage
+                          onOrderReturn={() => navigate(orderReturnPath(id))}
                           disabled={
                             updateMetadataOpts.loading ||
                             updatePrivateMetadataOpts.loading
@@ -260,7 +284,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                           }
                           onPaymentCapture={() => openModal("capture")}
                           onPaymentVoid={() => openModal("void")}
-                          onPaymentRefund={() => openModal("refund")}
+                          onPaymentRefund={() => navigate(orderRefundUrl(id))}
                           onProductClick={id => () => navigate(productUrl(id))}
                           onBillingAddressEdit={() =>
                             openModal("edit-billing-address")
@@ -325,10 +349,15 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                           onClose={closeModal}
                           onConfirm={() =>
                             orderPaymentMarkAsPaid.mutate({
-                              id
+                              id,
+                              transactionReference
                             })
                           }
                           open={params.action === "mark-paid"}
+                          transactionReference={transactionReference}
+                          handleTransactionReference={({ target }) =>
+                            setTransactionReference(target.value)
+                          }
                         />
                         <OrderPaymentVoidDialog
                           confirmButtonState={orderVoid.opts.status}
@@ -345,27 +374,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                           }
                           initial={order?.total.gross.amount}
                           open={params.action === "capture"}
-                          variant="capture"
                           onClose={closeModal}
                           onSubmit={variables =>
                             orderPaymentCapture.mutate({
-                              ...variables,
-                              id
-                            })
-                          }
-                        />
-                        <OrderPaymentDialog
-                          confirmButtonState={orderPaymentRefund.opts.status}
-                          errors={
-                            orderPaymentRefund.opts.data?.orderRefund.errors ||
-                            []
-                          }
-                          initial={order?.total.gross.amount}
-                          open={params.action === "refund"}
-                          variant="refund"
-                          onClose={closeModal}
-                          onSubmit={variables =>
-                            orderPaymentRefund.mutate({
                               ...variables,
                               id
                             })
@@ -449,72 +460,80 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                             }
                           )}
                         />
-                        <OrderDraftPage
-                          disabled={loading}
-                          onNoteAdd={variables =>
-                            orderAddNote.mutate({
-                              input: variables,
-                              order: id
-                            })
-                          }
-                          users={maybe(
-                            () =>
-                              users.data.search.edges.map(edge => edge.node),
-                            []
-                          )}
-                          hasMore={maybe(
-                            () => users.data.search.pageInfo.hasNextPage,
-                            false
-                          )}
-                          onFetchMore={loadMoreCustomers}
-                          fetchUsers={searchUsers}
-                          loading={users.loading}
-                          usersLoading={users.loading}
-                          onCustomerEdit={data =>
-                            orderDraftUpdate.mutate({
-                              id,
-                              input: data
-                            })
-                          }
-                          onDraftFinalize={() =>
-                            orderDraftFinalize.mutate({ id })
-                          }
-                          onDraftRemove={() => openModal("cancel")}
-                          onOrderLineAdd={() => openModal("add-order-line")}
-                          onBack={() => navigate(orderDraftListUrl())}
-                          order={order}
-                          countries={maybe(() => data.shop.countries, []).map(
-                            country => ({
-                              code: country.code,
-                              label: country.country
-                            })
-                          )}
-                          onProductClick={id => () =>
-                            navigate(productUrl(encodeURIComponent(id)))}
-                          onBillingAddressEdit={() =>
-                            openModal("edit-billing-address")
-                          }
-                          onShippingAddressEdit={() =>
-                            openModal("edit-shipping-address")
-                          }
-                          onShippingMethodEdit={() =>
-                            openModal("edit-shipping")
-                          }
-                          onOrderLineRemove={id =>
-                            orderLineDelete.mutate({ id })
-                          }
-                          onOrderLineChange={(id, data) =>
-                            orderLineUpdate.mutate({
-                              id,
-                              input: data
-                            })
-                          }
-                          saveButtonBarState="default"
-                          onProfileView={() =>
-                            navigate(customerUrl(order.user.id))
-                          }
-                          userPermissions={user?.userPermissions || []}
-                        />
+
+                        <OrderDiscountProvider order={order}>
+                          <OrderLineDiscountProvider order={order}>
+                            <OrderDraftPage
+                              disabled={loading}
+                              onNoteAdd={variables =>
+                                orderAddNote.mutate({
+                                  input: variables,
+                                  order: id
+                                })
+                              }
+                              users={maybe(
+                                () =>
+                                  users.data.search.edges.map(
+                                    edge => edge.node
+                                  ),
+                                []
+                              )}
+                              hasMore={maybe(
+                                () => users.data.search.pageInfo.hasNextPage,
+                                false
+                              )}
+                              onFetchMore={loadMoreCustomers}
+                              fetchUsers={searchUsers}
+                              loading={users.loading}
+                              usersLoading={users.loading}
+                              onCustomerEdit={data =>
+                                orderDraftUpdate.mutate({
+                                  id,
+                                  input: data
+                                })
+                              }
+                              onDraftFinalize={() =>
+                                orderDraftFinalize.mutate({ id })
+                              }
+                              onDraftRemove={() => openModal("cancel")}
+                              onOrderLineAdd={() => openModal("add-order-line")}
+                              onBack={() => navigate(orderDraftListUrl())}
+                              order={order}
+                              countries={maybe(
+                                () => data.shop.countries,
+                                []
+                              ).map(country => ({
+                                code: country.code,
+                                label: country.country
+                              }))}
+                              onProductClick={id => () =>
+                                navigate(productUrl(encodeURIComponent(id)))}
+                              onBillingAddressEdit={() =>
+                                openModal("edit-billing-address")
+                              }
+                              onShippingAddressEdit={() =>
+                                openModal("edit-shipping-address")
+                              }
+                              onShippingMethodEdit={() =>
+                                openModal("edit-shipping")
+                              }
+                              onOrderLineRemove={id =>
+                                orderLineDelete.mutate({ id })
+                              }
+                              onOrderLineChange={(id, data) =>
+                                orderLineUpdate.mutate({
+                                  id,
+                                  input: data
+                                })
+                              }
+                              saveButtonBarState="default"
+                              onProfileView={() =>
+                                navigate(customerUrl(order.user.id))
+                              }
+                              userPermissions={user?.userPermissions || []}
+                            />
+                          </OrderLineDiscountProvider>
+                        </OrderDiscountProvider>
                         <OrderDraftCancelDialog
                           confirmButtonState={orderDraftCancel.opts.status}
                           errors={
@@ -561,6 +580,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ id, params }) => {
                           products={variantSearchOpts.data?.search.edges.map(
                             edge => edge.node
                           )}
+                          selectedChannelId={order?.channel?.id}
                           onClose={closeModal}
                           onFetch={variantSearch}
                           onFetchMore={loadMore}

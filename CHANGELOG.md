@@ -4,6 +4,26 @@ All notable, unreleased changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Add Order Confirmation settings - #840 by @orzechdev and @mmarkusik
+- Add Page Types - #807 by @orzechdev
+- Add shipping methods to translation section - #864 by @marekchoinski
+- New Miscellaneous and Product refunds - #870 by @orzechdev
+- Add zip code exclusion - #877 by @dominik-zeglen
+- Add order reissue
+- Update quantity column in Inventory part of Product Variant view - #904 by @dominik-zeglen
+- Add file attributes - #884 by @orzechdev
+- Add shipping delivery days - #914 by @orzechdev
+- Guard against non-staff users logging in - #947 by @jwm0
+- Add reference attributes - #917 by @orzechdev
+- Add product reference attributes - #948 by @orzechdev
+- Drop descriptionJson and contentJson fields - #950 by @jwm0
+- Add error tracking with Sentry adapter - #956 by @jwm0
+- Add OAuth2 login with OpenID support - #963 by @orzechdev
+- Add order and order line discounts and modal - #978 by @mmarkusik
+- Fix no channels crash - #984 by @dominik-zeglen
+- Update webhooks - #982 by @piotrgrundas
+- Fix trigger form change when collections are being added to list of product collections - #987 by @gax97
+
 # 2.11.1
 
 - Support multiline text in plugin configuration secret field - #829 by @karolinakuzniewicz
@@ -46,6 +66,8 @@ All notable, unreleased changes to this project will be documented in this file.
 - Update schema with PositiveDecimal type - #695 by @AlicjaSzu
 - Add error info when fetching taxes - #701 by @dominik-zeglen
 - Fix return to previous page on screen size change - #710 by @orzechdev
+- Fix updating order details on address change #711 - by @orzechdev
+- Add no warehouses info when working with stock quantities #713 - by @orzechdev
 - Add variants reordering possibility - #716 by @orzechdev
 - Fix avatar change button - #719 by @orzechdev
 - Add slug field to product, collection, category & page details (update and create) - #720 by @mmarkusik
@@ -58,6 +80,9 @@ All notable, unreleased changes to this project will be documented in this file.
 - Fix order draft back button redirect - #753 by @orzechdev
 - Add manage product types and attributes permission - #768 by @orzechdev
 - Fix isPublished and isAvailable behaviour for products, collections and pages - #780 by @mmarkusik
+- Add metadata editor to page views - #782 by @dominik-zeglen
+- Add missing infinite scroll to searches - #793 by @dominik-zeglen
+- Fix for fulfilling order when allocated quantity equals total quantity - #788 by @GrzegorzDerdak
 
 ## 2.10.1
 

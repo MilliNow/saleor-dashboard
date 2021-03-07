@@ -1,40 +1,39 @@
+import { OutputData } from "@editorjs/editorjs";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import CardTitle from "@saleor/components/CardTitle";
 import FormSpacer from "@saleor/components/FormSpacer";
-import RichTextEditor from "@saleor/components/RichTextEditor";
-import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
+import RichTextEditor, {
+  RichTextEditorChange
+} from "@saleor/components/RichTextEditor";
+import { CollectionErrorFragment } from "@saleor/fragments/types/CollectionErrorFragment";
 import { commonMessages } from "@saleor/intl";
-import { maybe } from "@saleor/misc";
 import { getFormErrors, getProductErrorMessage } from "@saleor/utils/errors";
-import { RawDraftContentState } from "draft-js";
 import React from "react";
 import { useIntl } from "react-intl";
 
-import { CollectionDetails_collection } from "../../types/CollectionDetails";
-
 export interface CollectionDetailsProps {
-  collection?: CollectionDetails_collection;
   data: {
-    description: RawDraftContentState;
+    description: OutputData;
     name: string;
   };
   disabled: boolean;
-  errors: ProductErrorFragment[];
+  errors: CollectionErrorFragment[];
   onChange: (event: React.ChangeEvent<any>) => void;
+  onDescriptionChange: RichTextEditorChange;
 }
 
 const CollectionDetails: React.FC<CollectionDetailsProps> = ({
-  collection,
   disabled,
   data,
   onChange,
+  onDescriptionChange,
   errors
 }) => {
   const intl = useIntl();
 
-  const formErrors = getFormErrors(["name", "descriptionJson"], errors);
+  const formErrors = getFormErrors(["name", "description"], errors);
 
   return (
     <Card>
@@ -57,13 +56,13 @@ const CollectionDetails: React.FC<CollectionDetailsProps> = ({
         />
         <FormSpacer />
         <RichTextEditor
-          error={!!formErrors.descriptionJson}
-          helperText={getProductErrorMessage(formErrors.descriptionJson, intl)}
-          initial={maybe(() => JSON.parse(collection.descriptionJson))}
+          data={data.description}
+          error={!!formErrors.description}
+          helperText={getProductErrorMessage(formErrors.description, intl)}
           label={intl.formatMessage(commonMessages.description)}
           name="description"
           disabled={disabled}
-          onChange={onChange}
+          onChange={onDescriptionChange}
         />
       </CardContent>
     </Card>

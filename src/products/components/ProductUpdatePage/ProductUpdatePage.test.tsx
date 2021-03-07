@@ -1,4 +1,6 @@
 import placeholderImage from "@assets/images/placeholder255x255.png";
+import { channelsList } from "@saleor/channels/fixtures";
+import { createChannelsData } from "@saleor/channels/utils";
 import { collections } from "@saleor/collections/fixtures";
 import { fetchMoreProps, listActionsProps } from "@saleor/fixtures";
 import { product as productFixture } from "@saleor/products/fixtures";
@@ -11,6 +13,12 @@ import React from "react";
 import ProductUpdatePage, { ProductUpdatePageProps } from "./ProductUpdatePage";
 
 const product = productFixture(placeholderImage);
+const channels = createChannelsData(channelsList);
+const channelChoices = product.channelListings.map(listing => ({
+  label: listing.channel.name,
+  value: listing.channel.id
+}));
+
 import Adapter from "enzyme-adapter-react-16";
 configure({ adapter: new Adapter() });
 
@@ -18,8 +26,12 @@ const onSubmit = jest.fn();
 
 const props: ProductUpdatePageProps = {
   ...listActionsProps,
+  allChannelsCount: 5,
   categories: [product.category],
+  channelChoices,
+  channelsErrors: [],
   collections,
+  currentChannels: channels,
   defaultWeightUnit: "kg",
   disabled: false,
   errors: [],
@@ -27,9 +39,13 @@ const props: ProductUpdatePageProps = {
   fetchCollections: () => undefined,
   fetchMoreCategories: fetchMoreProps,
   fetchMoreCollections: fetchMoreProps,
+  hasChannelChanged: false,
   header: product.name,
   images: product.images,
+  onAssignReferencesClick: () => undefined,
   onBack: () => undefined,
+  onChannelsChange: () => undefined,
+  onCloseDialog: () => undefined,
   onDelete: () => undefined,
   onImageDelete: () => undefined,
   onImageUpload: () => undefined,
@@ -40,9 +56,13 @@ const props: ProductUpdatePageProps = {
   onVariantShow: () => undefined,
   onVariantsAdd: () => undefined,
   onWarehouseConfigure: () => undefined,
+  openChannelsModal: () => undefined,
   placeholderImage,
   product,
+  referencePages: [],
+  referenceProducts: [],
   saveButtonBarState: "default",
+  selectedChannelId: "123",
   taxTypes,
   variants: product.variants,
   warehouses: warehouseList
@@ -51,7 +71,7 @@ const props: ProductUpdatePageProps = {
 const selectors = {
   dropdown: `[data-test="autocomplete-dropdown"]`,
   empty: `[data-test-type="empty"]`,
-  input: `[data-test="product-attribute-value"] input`
+  input: `[data-test="attribute-value"] input`
 };
 
 describe("Product details page", () => {

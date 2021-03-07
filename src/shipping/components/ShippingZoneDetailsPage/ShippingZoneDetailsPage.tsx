@@ -5,6 +5,8 @@ import Container from "@saleor/components/Container";
 import CountryList from "@saleor/components/CountryList";
 import Form from "@saleor/components/Form";
 import Grid from "@saleor/components/Grid";
+import Metadata from "@saleor/components/Metadata/Metadata";
+import { MetadataFormData } from "@saleor/components/Metadata/types";
 import { MultiAutocompleteChoiceType } from "@saleor/components/MultiAutocompleteSelectField";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
@@ -17,24 +19,47 @@ import {
 import { SubmitPromise } from "@saleor/hooks/useForm";
 import useStateFromProps from "@saleor/hooks/useStateFromProps";
 import createMultiAutocompleteSelectHandler from "@saleor/utils/handlers/multiAutocompleteSelectChangeHandler";
+import { mapMetadataItemToInput } from "@saleor/utils/maps";
+import useMetadataChangeTrigger from "@saleor/utils/metadata/useMetadataChangeTrigger";
 import React from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import { getStringOrPlaceholder } from "../../../misc";
-import { FetchMoreProps, SearchProps } from "../../../types";
+import { ChannelProps, FetchMoreProps, SearchProps } from "../../../types";
 import { ShippingMethodTypeEnum } from "../../../types/globalTypes";
 import ShippingZoneInfo from "../ShippingZoneInfo";
 import ShippingZoneRates from "../ShippingZoneRates";
 import ShippingZoneWarehouses from "../ShippingZoneWarehouses";
 
-export interface FormData {
+export interface FormData extends MetadataFormData {
   name: string;
+  description: string;
   warehouses: string[];
 }
 
+const messages = defineMessages({
+  countries: {
+    defaultMessage: "Countries",
+    description: "country list header"
+  },
+  defaultZone: {
+    defaultMessage:
+      "This is default shipping zone, which means that it covers all of the countries which are not assigned to other shipping zones"
+  },
+  noCountriesAssigned: {
+    defaultMessage:
+      "Currently, there are no countries assigned to this shipping zone"
+  },
+  shipping: {
+    defaultMessage: "Shipping",
+    description: "shipping section header"
+  }
+});
+
 export interface ShippingZoneDetailsPageProps
   extends FetchMoreProps,
-    SearchProps {
+    SearchProps,
+    ChannelProps {
   disabled: boolean;
   errors: ShippingErrorFragment[];
   saveButtonBarState: ConfirmButtonTransitionState;
@@ -81,13 +106,17 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
   onWeightRateAdd,
   onWeightRateEdit,
   saveButtonBarState,
+  selectedChannelId,
   shippingZone,
   warehouses
 }) => {
   const intl = useIntl();
 
   const initialForm: FormData = {
+    description: shippingZone?.description || "",
+    metadata: shippingZone?.metadata.map(mapMetadataItemToInput),
     name: shippingZone?.name || "",
+    privateMetadata: shippingZone?.privateMetadata.map(mapMetadataItemToInput),
     warehouses: shippingZone?.warehouses?.map(warehouse => warehouse.id) || []
   };
   const [warehouseDisplayValues, setWarehouseDisplayValues] = useStateFromProps<
@@ -101,6 +130,10 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
 
   const warehouseChoices = warehouses.map(warehouseToChoice);
 
+  const {
+    makeChangeHandler: makeMetadataChangeHandler
+  } = useMetadataChangeTrigger();
+
   return (
     <Form initial={initialForm} onSubmit={onSubmit}>
       {({ change, data, hasChanged, submit, toggleValue }) => {
@@ -111,10 +144,12 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
           warehouseChoices
         );
 
+        const changeMetadata = makeMetadataChangeHandler(change);
+
         return (
           <Container>
             <AppHeader onBack={onBack}>
-              <FormattedMessage defaultMessage="Shipping" />
+              <FormattedMessage {...messages.shipping} />
             </AppHeader>
             <PageHeader title={shippingZone?.name} />
             <Grid>
@@ -133,20 +168,12 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
                     shippingZone?.default === undefined
                       ? undefined
                       : shippingZone.default
-                      ? intl.formatMessage({
-                          defaultMessage:
-                            "This is default shipping zone, which means that it covers all of the countries which are not assigned to other shipping zones"
-                        })
-                      : intl.formatMessage({
-                          defaultMessage:
-                            "Currently, there are no countries assigned to this shipping zone"
-                        })
+                      ? intl.formatMessage(messages.defaultZone)
+                      : intl.formatMessage(messages.noCountriesAssigned)
                   )}
                   onCountryAssign={onCountryAdd}
                   onCountryUnassign={onCountryRemove}
-                  title={intl.formatMessage({
-                    defaultMessage: "Countries"
-                  })}
+                  title={intl.formatMessage(messages.countries)}
                 />
                 <CardSpacer />
                 <ShippingZoneRates
@@ -158,6 +185,7 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
                     method => method.type === ShippingMethodTypeEnum.PRICE
                   )}
                   variant="price"
+                  selectedChannelId={selectedChannelId}
                 />
                 <CardSpacer />
                 <ShippingZoneRates
@@ -169,7 +197,10 @@ const ShippingZoneDetailsPage: React.FC<ShippingZoneDetailsPageProps> = ({
                     method => method.type === ShippingMethodTypeEnum.WEIGHT
                   )}
                   variant="weight"
+                  selectedChannelId={selectedChannelId}
                 />
+                <CardSpacer />
+                <Metadata data={data} onChange={changeMetadata} />
               </div>
               <div>
                 <ShippingZoneWarehouses

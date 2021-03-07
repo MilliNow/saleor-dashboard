@@ -1,6 +1,6 @@
 import useLocalStorage from "@saleor/hooks/useLocalStorage";
 import React from "react";
-import { IntlProvider } from "react-intl";
+import { IntlProvider, ReactIntlErrorCode } from "react-intl";
 
 export enum Locale {
   AR = "ar",
@@ -165,7 +165,7 @@ const LocaleProvider: React.FC = ({ children }) => {
       locale={locale}
       messages={getKeyValueJson(messages)}
       onError={err => {
-        if (!err.includes("[React Intl] Missing message: ")) {
+        if (!(err.code === ReactIntlErrorCode.MISSING_TRANSLATION)) {
           console.error(err);
         }
       }}

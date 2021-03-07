@@ -1,3 +1,5 @@
+import ChannelPickerDialog from "@saleor/channels/components/ChannelPickerDialog";
+import useAppChannel from "@saleor/components/AppLayout/AppChannelContext";
 import DeleteFilterTabDialog from "@saleor/components/DeleteFilterTabDialog";
 import SaveFilterTabDialog, {
   SaveFilterTabDialogFormData
@@ -8,12 +10,12 @@ import useNotifier from "@saleor/hooks/useNotifier";
 import usePaginator, {
   createPaginationState
 } from "@saleor/hooks/usePaginator";
-import useShop from "@saleor/hooks/useShop";
 import { getStringOrPlaceholder, maybe } from "@saleor/misc";
 import { ListViews } from "@saleor/types";
 import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
 import createFilterHandlers from "@saleor/utils/handlers/filterHandlers";
 import createSortHandler from "@saleor/utils/handlers/sortHandler";
+import { mapNodeToChoice } from "@saleor/utils/maps";
 import { getSortParams } from "@saleor/utils/sort";
 import React from "react";
 import { useIntl } from "react-intl";
@@ -26,6 +28,7 @@ import {
   orderListUrl,
   OrderListUrlDialog,
   OrderListUrlQueryParams,
+  orderSettingsPath,
   orderUrl
 } from "../../urls";
 import {
@@ -48,7 +51,6 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   const navigate = useNavigator();
   const notify = useNotifier();
   const paginate = usePaginator();
-  const shop = useShop();
   const { updateListSettings, settings } = useListSettings(
     ListViews.ORDER_LIST
   );
@@ -67,6 +69,13 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   const [createOrder] = useOrderDraftCreateMutation({
     onCompleted: handleCreateOrderCreateSuccess
   });
+
+  const { channel, availableChannels } = useAppChannel();
+
+  const noChannel = !channel && typeof channel !== "undefined";
+  const channelOpts = availableChannels
+    ? mapNodeToChoice(availableChannels)
+    : null;
 
   const tabs = getFilterTabs();
 
@@ -112,7 +121,6 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   };
 
   const paginationState = createPaginationState(settings.rowNumber, params);
-  const currencySymbol = maybe(() => shop.defaultCurrency, "USD");
 
   const queryVariables = React.useMemo(
     () => ({
@@ -128,7 +136,7 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   });
 
   const { loadNextPage, loadPreviousPage, pageInfo } = paginate(
-    maybe(() => data.orders.pageInfo),
+    data?.orders?.pageInfo,
     paginationState,
     params
   );
@@ -138,15 +146,14 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   return (
     <>
       <OrderListPage
-        currencySymbol={currencySymbol}
         settings={settings}
         currentTab={currentTab}
         disabled={loading}
-        filterOpts={getFilterOpts(params)}
+        filterOpts={getFilterOpts(params, channelOpts)}
         orders={maybe(() => data.orders.edges.map(edge => edge.node))}
         pageInfo={pageInfo}
         sort={getSortParams(params)}
-        onAdd={createOrder}
+        onAdd={() => openModal("create-order")}
         onNextPage={loadNextPage}
         onPreviousPage={loadPreviousPage}
         onUpdateListSettings={updateListSettings}
@@ -160,6 +167,7 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
         initialSearch={params.query || ""}
         tabs={getFilterTabs().map(tab => tab.name)}
         onAll={resetFilters}
+        onSettingsOpen={() => navigate(orderSettingsPath)}
       />
       <SaveFilterTabDialog
         open={params.action === "save-search"}
@@ -174,6 +182,22 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
         onSubmit={handleFilterTabDelete}
         tabName={getStringOrPlaceholder(tabs[currentTab - 1]?.name)}
       />
+      {!noChannel && (
+        <ChannelPickerDialog
+          channelsChoices={mapNodeToChoice(availableChannels)}
+          confirmButtonState="success"
+          defaultChoice={channel.id}
+          open={params.action === "create-order"}
+          onClose={closeModal}
+          onConfirm={channel =>
+            createOrder({
+              variables: {
+                input: { channel }
+              }
+            })
+          }
+        />
+      )}
     </>
   );
 };

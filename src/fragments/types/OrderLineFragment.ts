@@ -2,22 +2,41 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+import { DiscountValueTypeEnum } from "./../../types/globalTypes";
+
 // ====================================================
 // GraphQL fragment: OrderLineFragment
 // ====================================================
 
-export interface OrderLineFragment_variant_product {
-  __typename: "Product";
-  id: string;
-  isAvailableForPurchase: boolean | null;
-  isPublished: boolean;
-}
-
 export interface OrderLineFragment_variant {
   __typename: "ProductVariant";
   id: string;
-  product: OrderLineFragment_variant_product;
   quantityAvailable: number;
+}
+
+export interface OrderLineFragment_unitDiscount {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderLineFragment_undiscountedUnitPrice_gross {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderLineFragment_undiscountedUnitPrice_net {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderLineFragment_undiscountedUnitPrice {
+  __typename: "TaxedMoney";
+  currency: string;
+  gross: OrderLineFragment_undiscountedUnitPrice_gross;
+  net: OrderLineFragment_undiscountedUnitPrice_net;
 }
 
 export interface OrderLineFragment_unitPrice_gross {
@@ -52,6 +71,11 @@ export interface OrderLineFragment {
   productSku: string;
   quantity: number;
   quantityFulfilled: number;
-  unitPrice: OrderLineFragment_unitPrice | null;
+  unitDiscount: OrderLineFragment_unitDiscount;
+  unitDiscountValue: any;
+  unitDiscountReason: string | null;
+  unitDiscountType: DiscountValueTypeEnum | null;
+  undiscountedUnitPrice: OrderLineFragment_undiscountedUnitPrice;
+  unitPrice: OrderLineFragment_unitPrice;
   thumbnail: OrderLineFragment_thumbnail | null;
 }

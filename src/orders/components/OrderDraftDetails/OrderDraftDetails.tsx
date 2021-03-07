@@ -2,6 +2,10 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardTitle from "@saleor/components/CardTitle";
+import {
+  OrderDiscountContext,
+  OrderDiscountContextConsumerProps
+} from "@saleor/products/components/OrderDiscountProviders/OrderDiscountProvider";
 import React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -10,7 +14,7 @@ import { OrderDetails_order } from "../../types/OrderDetails";
 import OrderDraftDetailsProducts, {
   FormData as OrderDraftDetailsProductsFormData
 } from "../OrderDraftDetailsProducts";
-import OrderDraftDetailsSummary from "../OrderDraftDetailsSummary/OrderDraftDetailsSummary";
+import OrderDraftDetailsSummary from "../OrderDraftDetailsSummary";
 
 interface OrderDraftDetailsProps {
   order: OrderDetails_order;
@@ -40,12 +44,19 @@ const OrderDraftDetails: React.FC<OrderDraftDetailsProps> = ({
           description: "section header"
         })}
         toolbar={
-          <Button color="primary" variant="text" onClick={onOrderLineAdd}>
-            <FormattedMessage
-              defaultMessage="Add products"
-              description="button"
-            />
-          </Button>
+          order?.channel.isActive && (
+            <Button
+              color="primary"
+              variant="text"
+              onClick={onOrderLineAdd}
+              data-test-id="add-products-button"
+            >
+              <FormattedMessage
+                defaultMessage="Add products"
+                description="button"
+              />
+            </Button>
+          )
         }
       />
       <OrderDraftDetailsProducts
@@ -55,10 +66,15 @@ const OrderDraftDetails: React.FC<OrderDraftDetailsProps> = ({
       />
       {maybe(() => order.lines.length) !== 0 && (
         <CardContent>
-          <OrderDraftDetailsSummary
-            order={order}
-            onShippingMethodEdit={onShippingMethodEdit}
-          />
+          <OrderDiscountContext.Consumer>
+            {(orderDiscountProps: OrderDiscountContextConsumerProps) => (
+              <OrderDraftDetailsSummary
+                order={order}
+                onShippingMethodEdit={onShippingMethodEdit}
+                {...orderDiscountProps}
+              />
+            )}
+          </OrderDiscountContext.Consumer>
         </CardContent>
       )}
     </Card>

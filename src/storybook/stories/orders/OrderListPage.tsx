@@ -21,6 +21,15 @@ const props: OrderListPageProps = {
   ...filterPageProps,
   ...sortPageProps,
   filterOpts: {
+    channel: {
+      active: false,
+      value: [
+        {
+          label: "Channel PLN",
+          value: "channelId"
+        }
+      ]
+    },
     created: {
       active: false,
       value: {
@@ -37,6 +46,7 @@ const props: OrderListPageProps = {
       value: [OrderStatusFilter.CANCELED, OrderStatusFilter.FULFILLED]
     }
   },
+  onSettingsOpen: () => undefined,
   orders,
   sort: {
     ...sortPageProps.sort,

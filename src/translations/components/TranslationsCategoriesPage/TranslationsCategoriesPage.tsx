@@ -5,32 +5,27 @@ import LanguageSwitch from "@saleor/components/LanguageSwitch";
 import PageHeader from "@saleor/components/PageHeader";
 import { CategoryTranslationFragment } from "@saleor/fragments/types/CategoryTranslationFragment";
 import { commonMessages, sectionNames } from "@saleor/intl";
-import { TranslationsEntitiesPageProps } from "@saleor/translations/types";
+import {
+  TranslationInputFieldName,
+  TranslationsEntitiesPageProps
+} from "@saleor/translations/types";
 import React from "react";
 import { useIntl } from "react-intl";
 
-import { maybe } from "../../../misc";
 import { LanguageCodeEnum } from "../../../types/globalTypes";
 import TranslationFields from "../TranslationFields";
 
 export interface TranslationsCategoriesPageProps
   extends TranslationsEntitiesPageProps {
-  category: CategoryTranslationFragment;
+  data: CategoryTranslationFragment;
 }
-
-export const fieldNames = {
-  descriptionJson: "description",
-  name: "name",
-  seoDescription: "seoDescription",
-  seoTitle: "seoTitle"
-};
 
 const TranslationsCategoriesPage: React.FC<TranslationsCategoriesPageProps> = ({
   activeField,
   disabled,
   languageCode,
   languages,
-  category,
+  data,
   saveButtonState,
   onBack,
   onDiscard,
@@ -52,7 +47,7 @@ const TranslationsCategoriesPage: React.FC<TranslationsCategoriesPageProps> = ({
               'Translation Category "{categoryName}" - {languageCode}'
           },
           {
-            categoryName: maybe(() => category.name, "..."),
+            categoryName: data?.category?.name || "...",
             languageCode
           }
         )}
@@ -73,21 +68,17 @@ const TranslationsCategoriesPage: React.FC<TranslationsCategoriesPageProps> = ({
             displayName: intl.formatMessage({
               defaultMessage: "Category Name"
             }),
-            name: fieldNames.name,
-            translation: maybe(() =>
-              category.translation ? category.translation.name : null
-            ),
+            name: TranslationInputFieldName.name,
+            translation: data?.translation?.name || null,
             type: "short" as "short",
-            value: maybe(() => category.name)
+            value: data?.category?.name
           },
           {
             displayName: intl.formatMessage(commonMessages.description),
-            name: fieldNames.descriptionJson,
-            translation: maybe(() =>
-              category.translation ? category.translation.descriptionJson : null
-            ),
+            name: TranslationInputFieldName.description,
+            translation: data?.translation?.description || null,
             type: "rich" as "rich",
-            value: maybe(() => category.descriptionJson)
+            value: data?.category?.description
           }
         ]}
         saveButtonState={saveButtonState}
@@ -108,23 +99,19 @@ const TranslationsCategoriesPage: React.FC<TranslationsCategoriesPageProps> = ({
             displayName: intl.formatMessage({
               defaultMessage: "Search Engine Title"
             }),
-            name: fieldNames.seoTitle,
-            translation: maybe(() =>
-              category.translation ? category.translation.seoTitle : null
-            ),
+            name: TranslationInputFieldName.seoTitle,
+            translation: data?.translation?.seoTitle || null,
             type: "short" as "short",
-            value: maybe(() => category.seoTitle)
+            value: data?.category?.seoTitle
           },
           {
             displayName: intl.formatMessage({
               defaultMessage: "Search Engine Description"
             }),
-            name: fieldNames.seoDescription,
-            translation: maybe(() =>
-              category.translation ? category.translation.seoDescription : null
-            ),
+            name: TranslationInputFieldName.seoDescription,
+            translation: data?.translation?.seoDescription || null,
             type: "long" as "long",
-            value: maybe(() => category.seoDescription)
+            value: data?.category?.seoDescription
           }
         ]}
         saveButtonState={saveButtonState}

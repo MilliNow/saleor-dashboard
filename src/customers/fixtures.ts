@@ -1044,6 +1044,7 @@ export const customer: CustomerDetails_user & CustomerAddresses_user = {
       }
     ]
   },
+  metadata: [],
   note: null,
   orders: {
     __typename: "OrderCountableConnection",
@@ -1067,5 +1068,6 @@ export const customer: CustomerDetails_user & CustomerAddresses_user = {
         }
       }
     ]
-  }
+  },
+  privateMetadata: []
 };

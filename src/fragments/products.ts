@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 
+import { attributeValueFragment } from "./attributes";
 import { metadataFragment } from "./metadata";
 import { taxTypeFragment } from "./taxes";
 import { weightFragment } from "./weight";
@@ -23,6 +24,22 @@ export const fragmentMoney = gql`
   }
 `;
 
+export const priceRangeFragment = gql`
+  ${fragmentMoney}
+  fragment PriceRangeFragment on TaxedMoneyRange {
+    start {
+      net {
+        ...Money
+      }
+    }
+    stop {
+      net {
+        ...Money
+      }
+    }
+  }
+`;
+
 export const fragmentProductImage = gql`
   fragment ProductImageFragment on ProductImage {
     id
@@ -32,25 +49,72 @@ export const fragmentProductImage = gql`
   }
 `;
 
+export const channelListingProductWithoutPricingFragment = gql`
+  fragment ChannelListingProductWithoutPricingFragment on ProductChannelListing {
+    isPublished
+    publicationDate
+    isAvailableForPurchase
+    availableForPurchase
+    visibleInListings
+    channel {
+      id
+      name
+      currencyCode
+    }
+  }
+`;
+export const channelListingProductFragment = gql`
+  ${priceRangeFragment}
+  ${channelListingProductWithoutPricingFragment}
+  fragment ChannelListingProductFragment on ProductChannelListing {
+    ...ChannelListingProductWithoutPricingFragment
+    pricing {
+      priceRange {
+        ...PriceRangeFragment
+      }
+    }
+  }
+`;
+
+export const channelListingProductVariantFragment = gql`
+  ${fragmentMoney}
+  fragment ChannelListingProductVariantFragment on ProductVariantChannelListing {
+    channel {
+      id
+      name
+      currencyCode
+    }
+    price {
+      ...Money
+    }
+    costPrice {
+      ...Money
+    }
+  }
+`;
+
 export const productFragment = gql`
+  ${channelListingProductFragment}
   fragment ProductFragment on Product {
     id
     name
     thumbnail {
       url
     }
-    isAvailable
-    isPublished
     productType {
       id
       name
       hasVariants
     }
+    channelListings {
+      ...ChannelListingProductFragment
+    }
   }
 `;
 
 export const productVariantAttributesFragment = gql`
-  ${fragmentMoney}
+  ${priceRangeFragment}
+  ${attributeValueFragment}
   fragment ProductVariantAttributesFragment on Product {
     id
     attributes {
@@ -59,42 +123,35 @@ export const productVariantAttributesFragment = gql`
         slug
         name
         inputType
+        entityType
         valueRequired
         values {
-          id
-          name
-          slug
+          ...AttributeValueFragment
         }
       }
       values {
-        id
-        name
-        slug
+        ...AttributeValueFragment
       }
     }
     productType {
       id
-      variantAttributes {
+      variantAttributes(variantSelection: VARIANT_SELECTION) {
         id
         name
         values {
-          id
-          name
-          slug
+          ...AttributeValueFragment
         }
       }
     }
-    pricing {
-      priceRangeUndiscounted {
-        start {
-          gross {
-            ...Money
-          }
-        }
-        stop {
-          gross {
-            ...Money
-          }
+    channelListings {
+      channel {
+        id
+        name
+        currencyCode
+      }
+      pricing {
+        priceRange {
+          ...PriceRangeFragment
         }
       }
     }
@@ -103,20 +160,22 @@ export const productVariantAttributesFragment = gql`
 
 export const productFragmentDetails = gql`
   ${fragmentProductImage}
-  ${fragmentMoney}
   ${productVariantAttributesFragment}
   ${stockFragment}
   ${weightFragment}
   ${metadataFragment}
   ${taxTypeFragment}
+  ${channelListingProductFragment}
+  ${channelListingProductVariantFragment}
   fragment Product on Product {
     ...ProductVariantAttributesFragment
     ...MetadataFragment
     name
     slug
-    descriptionJson
+    description
     seoTitle
     seoDescription
+    rating
     defaultVariant {
       id
     }
@@ -128,52 +187,26 @@ export const productFragmentDetails = gql`
       id
       name
     }
-    margin {
-      start
-      stop
-    }
-    purchaseCost {
-      start {
-        ...Money
-      }
-      stop {
-        ...Money
-      }
-    }
-    isAvailableForPurchase
-    isAvailable
-    isPublished
     chargeTaxes
-    publicationDate
-    pricing {
-      priceRangeUndiscounted {
-        start {
-          gross {
-            ...Money
-          }
-        }
-        stop {
-          gross {
-            ...Money
-          }
-        }
-      }
+    channelListings {
+      ...ChannelListingProductFragment
     }
     images {
       ...ProductImageFragment
     }
+    isAvailable
     variants {
       id
       sku
       name
-      price {
-        ...Money
-      }
       margin
       stocks {
         ...StockFragment
       }
       trackInventory
+      channelListings {
+        ...ChannelListingProductVariantFragment
+      }
     }
     productType {
       id
@@ -189,49 +222,61 @@ export const productFragmentDetails = gql`
     taxType {
       ...TaxTypeFragment
     }
-    availableForPurchase
-    visibleInListings
+  }
+`;
+
+export const variantAttributeFragment = gql`
+  ${attributeValueFragment}
+  fragment VariantAttributeFragment on Attribute {
+    id
+    name
+    slug
+    inputType
+    entityType
+    valueRequired
+    values {
+      ...AttributeValueFragment
+    }
+  }
+`;
+
+export const selectedVariantAttributeFragment = gql`
+  ${attributeValueFragment}
+  ${variantAttributeFragment}
+  fragment SelectedVariantAttributeFragment on SelectedAttribute {
+    attribute {
+      ...VariantAttributeFragment
+    }
+    values {
+      ...AttributeValueFragment
+    }
   }
 `;
 
 export const fragmentVariant = gql`
-  ${fragmentMoney}
+  ${selectedVariantAttributeFragment}
+  ${priceRangeFragment}
   ${fragmentProductImage}
   ${stockFragment}
   ${weightFragment}
   ${metadataFragment}
+  ${channelListingProductVariantFragment}
   fragment ProductVariant on ProductVariant {
     id
     ...MetadataFragment
-    attributes {
-      attribute {
-        id
-        name
-        slug
-        valueRequired
-        values {
-          id
-          name
-          slug
-        }
-      }
-      values {
-        id
-        name
-        slug
-      }
+    selectionAttributes: attributes(variantSelection: VARIANT_SELECTION) {
+      ...SelectedVariantAttributeFragment
     }
-    costPrice {
-      ...Money
+    nonSelectionAttributes: attributes(
+      variantSelection: NOT_VARIANT_SELECTION
+    ) {
+      ...SelectedVariantAttributeFragment
     }
     images {
       id
       url
     }
     name
-    price {
-      ...Money
-    }
     product {
       id
       defaultVariant {
@@ -243,6 +288,18 @@ export const fragmentVariant = gql`
       name
       thumbnail {
         url
+      }
+      channelListings {
+        channel {
+          id
+          name
+          currencyCode
+        }
+        pricing {
+          priceRange {
+            ...PriceRangeFragment
+          }
+        }
       }
       variants {
         id
@@ -256,6 +313,9 @@ export const fragmentVariant = gql`
       defaultVariant {
         id
       }
+    }
+    channelListings {
+      ...ChannelListingProductVariantFragment
     }
     sku
     stocks {

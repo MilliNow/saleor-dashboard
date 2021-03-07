@@ -6,18 +6,10 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React from "react";
 
-import { DateTime } from "../Date";
+import TimelineEventHeader, { TitleElement } from "./TimelineEventHeader";
 
 const useStyles = makeStyles(
   theme => ({
-    date: {
-      color: theme.typography.caption.color
-    },
-    dateExpander: {
-      color: theme.typography.caption.color,
-      position: "absolute",
-      right: theme.spacing(3)
-    },
     dot: {
       backgroundColor: theme.palette.primary.main,
       borderRadius: "100%",
@@ -27,20 +19,39 @@ const useStyles = makeStyles(
       top: 6,
       width: 8
     },
-    noExpander: {
-      alignItems: "center",
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: theme.spacing(),
-      marginLeft: theme.spacing(3),
-      width: "100%"
-    },
     panel: {
+      "& .MuiExpansionPanelDetails-root": {
+        padding: 0,
+        paddingTop: theme.spacing(2)
+      },
+      "&.Mui-expanded": {
+        margin: 0,
+        minHeight: 0
+      },
       "&:before": {
         display: "none"
       },
       background: "none",
+      display: "",
+      margin: 0,
+      minHeight: 0,
       width: "100%"
+    },
+    panelExpander: {
+      "&.MuiExpansionPanelSummary-root.Mui-expanded": {
+        minHeight: 0
+      },
+      "&> .MuiExpansionPanelSummary-content": {
+        margin: 0
+      },
+      "&> .MuiExpansionPanelSummary-expandIcon": {
+        padding: 0,
+        position: "absolute",
+        right: theme.spacing(20)
+      },
+      margin: 0,
+      minHeight: 0,
+      padding: 0
     },
     root: {
       "&:last-child:after": {
@@ -55,6 +66,7 @@ const useStyles = makeStyles(
       alignItems: "center",
       display: "flex",
       marginBottom: theme.spacing(3),
+      marginTop: 0,
       position: "relative",
       width: "100%"
     }
@@ -62,14 +74,16 @@ const useStyles = makeStyles(
   { name: "TimelineEvent" }
 );
 
-interface TimelineEventProps {
+export interface TimelineEventProps {
   children?: React.ReactNode;
   date: string;
-  title: string;
+  secondaryTitle?: string;
+  title?: string;
+  titleElements?: TitleElement[];
 }
 
 export const TimelineEvent: React.FC<TimelineEventProps> = props => {
-  const { children, date, title } = props;
+  const { children, date, secondaryTitle, title, titleElements } = props;
 
   const classes = useStyles(props);
 
@@ -78,21 +92,27 @@ export const TimelineEvent: React.FC<TimelineEventProps> = props => {
       <span className={classes.dot} />
       {children ? (
         <ExpansionPanel className={classes.panel} elevation={0}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{title}</Typography>
-            <Typography className={classes.dateExpander}>{title}</Typography>
+          <ExpansionPanelSummary
+            className={classes.panelExpander}
+            expandIcon={<ExpandMoreIcon />}
+          >
+            <TimelineEventHeader
+              title={title}
+              date={date}
+              titleElements={titleElements}
+            />
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Typography>{children}</Typography>
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ) : (
-        <div className={classes.noExpander}>
-          <Typography>{title}</Typography>
-          <Typography className={classes.date}>
-            <DateTime date={date} />
-          </Typography>
-        </div>
+        <TimelineEventHeader
+          title={title}
+          titleElements={titleElements}
+          secondaryTitle={secondaryTitle}
+          date={date}
+        />
       )}
     </div>
   );

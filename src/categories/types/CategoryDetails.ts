@@ -85,47 +85,64 @@ export interface CategoryDetails_category_products_edges_node_productType {
   name: string;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_start_gross {
+export interface CategoryDetails_category_products_edges_node_channelListings_channel {
+  __typename: "Channel";
+  id: string;
+  name: string;
+  currencyCode: string;
+}
+
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_start_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_start {
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_start {
   __typename: "TaxedMoney";
-  gross: CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_start_gross;
+  net: CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_start_net;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_stop_gross {
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_stop_net {
   __typename: "Money";
   amount: number;
   currency: string;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_stop {
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_stop {
   __typename: "TaxedMoney";
-  gross: CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_stop_gross;
+  net: CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_stop_net;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted {
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange {
   __typename: "TaxedMoneyRange";
-  start: CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_start | null;
-  stop: CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted_stop | null;
+  start: CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_start | null;
+  stop: CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange_stop | null;
 }
 
-export interface CategoryDetails_category_products_edges_node_pricing {
+export interface CategoryDetails_category_products_edges_node_channelListings_pricing {
   __typename: "ProductPricingInfo";
-  priceRangeUndiscounted: CategoryDetails_category_products_edges_node_pricing_priceRangeUndiscounted | null;
+  priceRange: CategoryDetails_category_products_edges_node_channelListings_pricing_priceRange | null;
+}
+
+export interface CategoryDetails_category_products_edges_node_channelListings {
+  __typename: "ProductChannelListing";
+  isPublished: boolean;
+  publicationDate: any | null;
+  isAvailableForPurchase: boolean | null;
+  availableForPurchase: any | null;
+  visibleInListings: boolean;
+  channel: CategoryDetails_category_products_edges_node_channelListings_channel;
+  pricing: CategoryDetails_category_products_edges_node_channelListings_pricing | null;
 }
 
 export interface CategoryDetails_category_products_edges_node {
   __typename: "Product";
   id: string;
   name: string;
-  isAvailable: boolean | null;
   thumbnail: CategoryDetails_category_products_edges_node_thumbnail | null;
   productType: CategoryDetails_category_products_edges_node_productType;
-  pricing: CategoryDetails_category_products_edges_node_pricing | null;
+  channelListings: CategoryDetails_category_products_edges_node_channelListings[] | null;
 }
 
 export interface CategoryDetails_category_products_edges {
@@ -148,7 +165,7 @@ export interface CategoryDetails_category {
   backgroundImage: CategoryDetails_category_backgroundImage | null;
   name: string;
   slug: string;
-  descriptionJson: any;
+  description: any | null;
   seoDescription: string | null;
   seoTitle: string | null;
   parent: CategoryDetails_category_parent | null;

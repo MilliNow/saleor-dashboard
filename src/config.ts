@@ -3,6 +3,7 @@ import { SearchVariables } from "./hooks/makeSearch";
 import { ListSettings, ListViews, Pagination } from "./types";
 
 export const APP_MOUNT_URI = process.env.APP_MOUNT_URI;
+export const APP_DEFAULT_URI = "/";
 export const API_URI = process.env.API_URI;
 
 export const DEFAULT_INITIAL_SEARCH_DATA: SearchVariables = {
@@ -18,7 +19,7 @@ export const DEFAULT_INITIAL_PAGINATION_DATA: Pagination = {
 
 export const PAGINATE_BY = 20;
 
-export type ProductListColumns = "productType" | "isPublished" | "price";
+export type ProductListColumns = "productType" | "availability" | "price";
 export interface AppListViewSettings {
   [ListViews.APPS_LIST]: ListSettings;
   [ListViews.CATEGORY_LIST]: ListSettings;
@@ -67,7 +68,7 @@ export const defaultListSettings: AppListViewSettings = {
     rowNumber: PAGINATE_BY
   },
   [ListViews.PRODUCT_LIST]: {
-    columns: ["isPublished", "price", "productType"],
+    columns: ["availability", "price", "productType"],
     rowNumber: PAGINATE_BY
   },
   [ListViews.SALES_LIST]: {

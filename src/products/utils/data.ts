@@ -1,7 +1,14 @@
+import { getSelectedAttributeValues } from "@saleor/attributes/utils/data";
+import { ChannelData } from "@saleor/channels/utils";
+import {
+  AttributeInput,
+  VariantAttributeScope
+} from "@saleor/components/Attributes";
 import { MetadataFormData } from "@saleor/components/Metadata/types";
-import { MultiAutocompleteChoiceType } from "@saleor/components/MultiAutocompleteSelectField";
 import { SingleAutocompleteChoiceType } from "@saleor/components/SingleAutocompleteSelectField";
 import { ProductVariant } from "@saleor/fragments/types/ProductVariant";
+import { SelectedVariantAttributeFragment } from "@saleor/fragments/types/SelectedVariantAttributeFragment";
+import { VariantAttributeFragment } from "@saleor/fragments/types/VariantAttributeFragment";
 import { FormsetAtomicData } from "@saleor/hooks/useFormset";
 import { maybe } from "@saleor/misc";
 import {
@@ -12,11 +19,8 @@ import {
 import { SearchProductTypes_search_edges_node_productAttributes } from "@saleor/searches/types/SearchProductTypes";
 import { StockInput } from "@saleor/types/globalTypes";
 import { mapMetadataItemToInput } from "@saleor/utils/maps";
-import { RawDraftContentState } from "draft-js";
 
-import { ProductAttributeInput } from "../components/ProductAttributes";
 import { ProductStockInput } from "../components/ProductStocks";
-import { VariantAttributeInput } from "../components/ProductVariantAttributes";
 import { ProductVariantCreateData_product } from "../types/ProductVariantCreateData";
 
 export interface Collection {
@@ -38,38 +42,20 @@ export interface ProductType {
 
 export function getAttributeInputFromProduct(
   product: ProductDetails_product
-): ProductAttributeInput[] {
+): AttributeInput[] {
   return maybe(
-    (): ProductAttributeInput[] =>
+    (): AttributeInput[] =>
       product.attributes.map(attribute => ({
         data: {
+          entityType: attribute.attribute.entityType,
           inputType: attribute.attribute.inputType,
           isRequired: attribute.attribute.valueRequired,
+          selectedValues: attribute.values,
           values: attribute.attribute.values
         },
         id: attribute.attribute.id,
         label: attribute.attribute.name,
-        value: attribute.values.map(value => value.slug)
-      })),
-    []
-  );
-}
-
-export interface ProductAttributeValueChoices {
-  id: string;
-  values: MultiAutocompleteChoiceType[];
-}
-export function getSelectedAttributesFromProduct(
-  product: ProductDetails_product
-): ProductAttributeValueChoices[] {
-  return maybe(
-    () =>
-      product.attributes.map(attribute => ({
-        id: attribute.attribute.id,
-        values: attribute.values.map(value => ({
-          label: value.name,
-          value: value.slug
-        }))
+        value: getSelectedAttributeValues(attribute)
       })),
     []
   );
@@ -77,9 +63,10 @@ export function getSelectedAttributesFromProduct(
 
 export function getAttributeInputFromProductType(
   productType: ProductType
-): ProductAttributeInput[] {
+): AttributeInput[] {
   return productType.productAttributes.map(attribute => ({
     data: {
+      entityType: attribute.entityType,
       inputType: attribute.inputType,
       isRequired: attribute.valueRequired,
       values: attribute.values
@@ -90,20 +77,75 @@ export function getAttributeInputFromProductType(
   }));
 }
 
+export function getAttributeInputFromAttributes(
+  variantAttributes: VariantAttributeFragment[],
+  variantAttributeScope: VariantAttributeScope
+): AttributeInput[] {
+  return variantAttributes?.map(attribute => ({
+    data: {
+      entityType: attribute.entityType,
+      inputType: attribute.inputType,
+      isRequired: attribute.valueRequired,
+      values: attribute.values,
+      variantAttributeScope
+    },
+    id: attribute.id,
+    label: attribute.name,
+    value: [""]
+  }));
+}
+
+export function getAttributeInputFromSelectedAttributes(
+  variantAttributes: SelectedVariantAttributeFragment[],
+  variantAttributeScope: VariantAttributeScope
+): AttributeInput[] {
+  return variantAttributes?.map(attribute => ({
+    data: {
+      entityType: attribute.attribute.entityType,
+      inputType: attribute.attribute.inputType,
+      isRequired: attribute.attribute.valueRequired,
+      selectedValues: attribute.values,
+      values: attribute.attribute.values,
+      variantAttributeScope
+    },
+    id: attribute.attribute.id,
+    label: attribute.attribute.name,
+    value: getSelectedAttributeValues(attribute)
+  }));
+}
+
 export function getAttributeInputFromVariant(
   variant: ProductVariant
-): VariantAttributeInput[] {
-  return maybe(
-    (): VariantAttributeInput[] =>
-      variant.attributes.map(attribute => ({
-        data: {
-          values: attribute.attribute.values
-        },
-        id: attribute.attribute.id,
-        label: attribute.attribute.name,
-        value: maybe(() => attribute.values[0].slug, null)
-      })),
-    []
+): AttributeInput[] {
+  const selectionAttributeInput = getAttributeInputFromSelectedAttributes(
+    variant?.selectionAttributes,
+    VariantAttributeScope.VARIANT_SELECTION
+  );
+  const nonSelectionAttributeInput = getAttributeInputFromSelectedAttributes(
+    variant?.nonSelectionAttributes,
+    VariantAttributeScope.NOT_VARIANT_SELECTION
+  );
+
+  return (
+    selectionAttributeInput?.concat(nonSelectionAttributeInput ?? []) ?? []
+  );
+}
+
+export function getVariantAttributeInputFromProduct(
+  product: ProductVariantCreateData_product
+): AttributeInput[] {
+  const selectionAttributeInput = getAttributeInputFromAttributes(
+    product?.productType?.selectionVariantAttributes,
+    VariantAttributeScope.VARIANT_SELECTION
+  );
+
+  const nonSelectionAttributeInput = getAttributeInputFromAttributes(
+    product?.productType?.nonSelectionVariantAttributes,
+    VariantAttributeScope.NOT_VARIANT_SELECTION
+  );
+
+  return (
+    selectionAttributeInput?.concat(nonSelectionAttributeInput ?? []) ?? []
   );
 }
 
@@ -112,7 +154,9 @@ export function getStockInputFromVariant(
 ): ProductStockInput[] {
   return (
     variant?.stocks.map(stock => ({
-      data: null,
+      data: {
+        quantityAllocated: stock.quantityAllocated
+      },
       id: stock.warehouse.id,
       label: stock.warehouse.name,
       value: stock.quantity.toString()
@@ -120,24 +164,13 @@ export function getStockInputFromVariant(
   );
 }
 
-export function getVariantAttributeInputFromProduct(
-  product: ProductVariantCreateData_product
-): VariantAttributeInput[] {
-  return product?.productType?.variantAttributes?.map(attribute => ({
-    data: {
-      values: attribute.values
-    },
-    id: attribute.id,
-    label: attribute.name,
-    value: ""
-  }));
-}
-
 export function getStockInputFromProduct(
   product: ProductDetails_product
 ): ProductStockInput[] {
   return product?.variants[0]?.stocks.map(stock => ({
-    data: null,
+    data: {
+      quantityAllocated: stock?.quantityAllocated
+    },
     id: stock.warehouse.id,
     label: stock.warehouse.name,
     value: stock.quantity.toString()
@@ -169,50 +202,42 @@ export function getChoices(nodes: Node[]): SingleAutocompleteChoiceType[] {
 }
 
 export interface ProductUpdatePageFormData extends MetadataFormData {
-  availableForPurchase: string;
-  basePrice: number;
   category: string | null;
   changeTaxCode: boolean;
+  channelListings: ChannelData[];
   chargeTaxes: boolean;
   collections: string[];
-  description: RawDraftContentState;
   isAvailable: boolean;
-  isAvailableForPurchase: boolean;
-  isPublished: boolean;
   name: string;
   slug: string;
-  publicationDate: string;
+  rating: number;
   seoDescription: string;
   seoTitle: string;
   sku: string;
   taxCode: string;
   trackInventory: boolean;
-  visibleInListings: boolean;
   weight: string;
 }
 
 export function getProductUpdatePageFormData(
   product: ProductDetails_product,
-  variants: ProductDetails_product_variants[]
+  variants: ProductDetails_product_variants[],
+  currentChannels: ChannelData[]
 ): ProductUpdatePageFormData {
   return {
-    availableForPurchase: product?.availableForPurchase,
-    basePrice: maybe(() => product.variants[0].price.amount, 0),
     category: maybe(() => product.category.id, ""),
     changeTaxCode: !!product?.taxType.taxCode,
+    channelListings: currentChannels,
     chargeTaxes: maybe(() => product.chargeTaxes, false),
     collections: maybe(
       () => product.collections.map(collection => collection.id),
       []
     ),
-    description: maybe(() => JSON.parse(product.descriptionJson)),
     isAvailable: !!product?.isAvailable,
-    isAvailableForPurchase: !!product?.isAvailableForPurchase,
-    isPublished: maybe(() => product.isPublished, false),
     metadata: product?.metadata?.map(mapMetadataItemToInput),
     name: maybe(() => product.name, ""),
     privateMetadata: product?.privateMetadata?.map(mapMetadataItemToInput),
-    publicationDate: maybe(() => product.publicationDate, ""),
+    rating: maybe(() => product.rating, null),
     seoDescription: maybe(() => product.seoDescription, ""),
     seoTitle: maybe(() => product.seoTitle, ""),
     sku: maybe(
@@ -227,7 +252,6 @@ export function getProductUpdatePageFormData(
     slug: product?.slug || "",
     taxCode: product?.taxType.taxCode,
     trackInventory: !!product?.variants[0]?.trackInventory,
-    visibleInListings: !!product?.visibleInListings,
     weight: product?.weight?.value.toString() || ""
   };
 }

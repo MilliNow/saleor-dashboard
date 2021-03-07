@@ -9,6 +9,7 @@ import ConfirmButton, {
 } from "@saleor/components/ConfirmButton";
 import makeCreatorSteps, { Step } from "@saleor/components/CreatorSteps";
 import { MultiAutocompleteChoiceType } from "@saleor/components/MultiAutocompleteSelectField";
+import { ChannelFragment } from "@saleor/fragments/types/ChannelFragment";
 import { ExportErrorFragment } from "@saleor/fragments/types/ExportErrorFragment";
 import useForm, { FormChange } from "@saleor/hooks/useForm";
 import useModalDialogErrors from "@saleor/hooks/useModalDialogErrors";
@@ -66,6 +67,7 @@ function useSteps(): Array<Step<ProductExportStep>> {
 const initialForm: ExportProductsInput = {
   exportInfo: {
     attributes: [],
+    channels: [],
     fields: [],
     warehouses: []
   },
@@ -77,6 +79,7 @@ const ProductExportSteps = makeCreatorSteps<ProductExportStep>();
 
 export interface ProductExportDialogProps extends DialogProps, FetchMoreProps {
   attributes: SearchAttributes_search_edges_node[];
+  channels: ChannelFragment[];
   confirmButtonState: ConfirmButtonTransitionState;
   errors: ExportErrorFragment[];
   productQuantity: ProductQuantity;
@@ -88,6 +91,7 @@ export interface ProductExportDialogProps extends DialogProps, FetchMoreProps {
 
 const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
   attributes,
+  channels,
   confirmButtonState,
   errors,
   productQuantity,
@@ -109,6 +113,7 @@ const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
   const [selectedAttributes, setSelectedAttributes] = React.useState<
     MultiAutocompleteChoiceType[]
   >([]);
+  const [selectedChannels, setSelectedChannels] = React.useState([]);
   const { change, data, reset, submit } = useForm(initialForm, onSubmit);
 
   useModalDialogOpen(open, {
@@ -139,6 +144,45 @@ const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
     setSelectedAttributes(
       toggle(choice, selectedAttributes, (a, b) => a.value === b.value)
     );
+  };
+
+  const handleChannelSelect = (option: ChannelFragment) => {
+    change({
+      target: {
+        name: "exportInfo",
+        value: {
+          ...data.exportInfo,
+          channels: toggle(
+            option.id,
+            data.exportInfo.channels,
+            (a, b) => a === b
+          )
+        }
+      }
+    });
+    const choice = channels.find(choice => choice.id === option.id);
+
+    setSelectedChannels(
+      toggle(choice, selectedChannels, (a, b) => a.id === b.id)
+    );
+  };
+
+  const handleToggleAllChannels = (
+    items: ChannelFragment[],
+    selected: number
+  ) => {
+    setSelectedChannels(selected === items.length ? [] : channels);
+
+    change({
+      target: {
+        name: "exportInfo",
+        value: {
+          ...data.exportInfo,
+          channels:
+            selected === items.length ? [] : channels.map(channel => channel.id)
+        }
+      }
+    });
   };
 
   const handleWarehouseSelect: FormChange = event =>
@@ -188,12 +232,16 @@ const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
           {step === ProductExportStep.INFO && (
             <ProductExportDialogInfo
               attributes={attributeChoices}
+              channels={channels}
               data={data}
+              selectedChannels={selectedChannels}
               selectedAttributes={selectedAttributes}
               onAttrtibuteSelect={handleAttributeSelect}
               onWarehouseSelect={handleWarehouseSelect}
               onChange={change}
               warehouses={warehouseChoices}
+              onChannelSelect={handleChannelSelect}
+              onSelectAllChannels={handleToggleAllChannels}
               onSelectAllWarehouses={handleToggleAllWarehouses}
               {...fetchMoreProps}
             />

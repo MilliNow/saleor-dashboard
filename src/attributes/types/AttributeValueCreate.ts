@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeValueCreateInput, AttributeInputTypeEnum, AttributeValueType, ProductErrorCode } from "./../../types/globalTypes";
+import { AttributeValueCreateInput, AttributeTypeEnum, AttributeInputTypeEnum, AttributeEntityTypeEnum, AttributeErrorCode } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: AttributeValueCreate
@@ -20,12 +20,19 @@ export interface AttributeValueCreate_attributeValueCreate_attribute_privateMeta
   value: string;
 }
 
+export interface AttributeValueCreate_attributeValueCreate_attribute_values_file {
+  __typename: "File";
+  url: string;
+  contentType: string | null;
+}
+
 export interface AttributeValueCreate_attributeValueCreate_attribute_values {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
   slug: string | null;
-  type: AttributeValueType | null;
+  file: AttributeValueCreate_attributeValueCreate_attribute_values_file | null;
+  reference: string | null;
 }
 
 export interface AttributeValueCreate_attributeValueCreate_attribute {
@@ -33,6 +40,7 @@ export interface AttributeValueCreate_attributeValueCreate_attribute {
   id: string;
   name: string | null;
   slug: string | null;
+  type: AttributeTypeEnum | null;
   visibleInStorefront: boolean;
   filterableInDashboard: boolean;
   filterableInStorefront: boolean;
@@ -40,14 +48,15 @@ export interface AttributeValueCreate_attributeValueCreate_attribute {
   privateMetadata: (AttributeValueCreate_attributeValueCreate_attribute_privateMetadata | null)[];
   availableInGrid: boolean;
   inputType: AttributeInputTypeEnum | null;
+  entityType: AttributeEntityTypeEnum | null;
   storefrontSearchPosition: number;
   valueRequired: boolean;
   values: (AttributeValueCreate_attributeValueCreate_attribute_values | null)[] | null;
 }
 
 export interface AttributeValueCreate_attributeValueCreate_errors {
-  __typename: "ProductError";
-  code: ProductErrorCode;
+  __typename: "AttributeError";
+  code: AttributeErrorCode;
   field: string | null;
 }
 

@@ -12,12 +12,10 @@ function loadStories() {
   require("./stories/components/ActionDialog");
   require("./stories/components/AddressEdit");
   require("./stories/components/AddressFormatter");
-  require("./stories/components/AssignAttributeDialog");
   require("./stories/components/AssignProductDialog");
   require("./stories/components/AutocompleteSelectMenu");
   require("./stories/components/CardMenu");
   require("./stories/components/Checkbox");
-  require("./stories/components/Chip");
   require("./stories/components/ColumnPicker");
   require("./stories/components/Date");
   require("./stories/components/DateTime");
@@ -35,7 +33,6 @@ function loadStories() {
   require("./stories/components/Percent");
   require("./stories/components/PhoneField");
   require("./stories/components/PriceField");
-  require("./stories/components/RichTextEditor");
   require("./stories/components/SaveButtonBar");
   require("./stories/components/SaveFilterTabDialog");
   require("./stories/components/SingleSelectField");
@@ -46,10 +43,6 @@ function loadStories() {
   require("./stories/components/Weight");
   require("./stories/components/WeightRange");
   require("./stories/components/messages");
-
-  // Authentication
-  require("./stories/auth/LoginPage");
-  require("./stories/auth/LoginLoading");
 
   // Attributes
   require("./stories/attributes/AttributeBulkDeleteDialog");
@@ -122,7 +115,7 @@ function loadStories() {
   require("./stories/orders/OrderDetailsPage");
   require("./stories/orders/OrderDraftCancelDialog");
   require("./stories/orders/OrderDraftListPage");
-  require("./stories/orders/OrderDraftPage");
+  require("./stories/orders/OrderDraftPage/OrderDraftPage");
   require("./stories/orders/OrderFulfillmentCancelDialog");
   require("./stories/orders/OrderFulfillmentDialog");
   require("./stories/orders/OrderFulfillmentTrackingDialog");
@@ -136,8 +129,6 @@ function loadStories() {
   require("./stories/orders/OrderInvoiceList");
 
   // Product types
-  require("./stories/productTypes/ProductTypeAttributeUnassignDialog");
-  require("./stories/productTypes/ProductTypeBulkAttributeUnassignDialog");
   require("./stories/productTypes/ProductTypeCreatePage");
   require("./stories/productTypes/ProductTypeDeleteDialog");
   require("./stories/productTypes/ProductTypeDetailsPage");
@@ -147,11 +138,9 @@ function loadStories() {
   require("./stories/shipping/ShippingZoneCountriesAssignDialog");
   require("./stories/shipping/ShippingZoneCreatePage");
   require("./stories/shipping/ShippingZoneDetailsPage");
-  require("./stories/shipping/ShippingZoneRateDialog");
   require("./stories/shipping/ShippingZonesListPage");
 
   // Site settings
-  require("./stories/siteSettings/SiteSettingsKeyDialog");
   require("./stories/siteSettings/SiteSettingsPage");
 
   // Taxes

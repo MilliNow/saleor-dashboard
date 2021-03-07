@@ -1,3 +1,4 @@
+import { attributeValueFragment } from "@saleor/fragments/attributes";
 import { pageInfoFragment } from "@saleor/fragments/pageInfo";
 import { taxTypeFragment } from "@saleor/fragments/taxes";
 import makeTopLevelSearch from "@saleor/hooks/makeTopLevelSearch";
@@ -9,6 +10,7 @@ import {
 } from "./types/SearchProductTypes";
 
 export const searchProductTypes = gql`
+  ${attributeValueFragment}
   ${pageInfoFragment}
   ${taxTypeFragment}
   query SearchProductTypes($after: String, $first: Int!, $query: String!) {
@@ -25,13 +27,12 @@ export const searchProductTypes = gql`
           productAttributes {
             id
             inputType
+            entityType
             slug
             name
             valueRequired
             values {
-              id
-              name
-              slug
+              ...AttributeValueFragment
             }
           }
           taxType {

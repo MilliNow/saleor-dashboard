@@ -1,6 +1,7 @@
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
+import { getParsedDataForJsonStringField } from "@saleor/translations/utils";
 import createMetadataCreateHandler from "@saleor/utils/handlers/metadataCreateHandler";
 import {
   useMetadataUpdate,
@@ -9,7 +10,8 @@ import {
 import React from "react";
 import { useIntl } from "react-intl";
 
-import CategoryCreatePage, { FormData } from "../components/CategoryCreatePage";
+import CategoryCreatePage from "../components/CategoryCreatePage";
+import { CategoryCreateData } from "../components/CategoryCreatePage/form";
 import { useCategoryCreateMutation } from "../mutations";
 import { CategoryCreate } from "../types/CategoryCreate";
 import { categoryListUrl, categoryUrl } from "../urls";
@@ -43,11 +45,11 @@ export const CategoryCreateView: React.FC<CategoryCreateViewProps> = ({
     onCompleted: handleSuccess
   });
 
-  const handleCreate = async (formData: FormData) => {
+  const handleCreate = async (formData: CategoryCreateData) => {
     const result = await createCategory({
       variables: {
         input: {
-          descriptionJson: JSON.stringify(formData.description),
+          description: getParsedDataForJsonStringField(formData.description),
           name: formData.name,
           seo: {
             description: formData.seoDescription,

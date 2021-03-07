@@ -1,12 +1,25 @@
-import { content } from "../storybook/stories/components/RichTextEditor";
+import * as richTextEditorFixtures from "../components/RichTextEditor/fixtures.json";
 import { CollectionDetails_collection } from "./types/CollectionDetails";
 import { CollectionList_collections_edges_node } from "./types/CollectionList";
+
+const content = richTextEditorFixtures.richTextEditor;
 
 export const collections: CollectionList_collections_edges_node[] = [
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "123",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjox",
-    isPublished: true,
     name: "Summer collection",
     products: {
       __typename: "ProductCountableConnection",
@@ -15,8 +28,19 @@ export const collections: CollectionList_collections_edges_node[] = [
   },
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "124",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjoy",
-    isPublished: true,
     name: "Winter sale",
     products: {
       __typename: "ProductCountableConnection",
@@ -25,8 +49,19 @@ export const collections: CollectionList_collections_edges_node[] = [
   },
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "125",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjoz",
-    isPublished: true,
     name: "Vintage vibes",
     products: {
       __typename: "ProductCountableConnection",
@@ -35,8 +70,19 @@ export const collections: CollectionList_collections_edges_node[] = [
   },
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "126",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjoa",
-    isPublished: true,
     name: "Merry Christmas",
     products: {
       __typename: "ProductCountableConnection",
@@ -45,8 +91,19 @@ export const collections: CollectionList_collections_edges_node[] = [
   },
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "127",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjob",
-    isPublished: true,
     name: "80s Miami",
     products: {
       __typename: "ProductCountableConnection",
@@ -55,8 +112,19 @@ export const collections: CollectionList_collections_edges_node[] = [
   },
   {
     __typename: "Collection",
+    channelListings: [
+      {
+        __typename: "CollectionChannelListing",
+        channel: {
+          __typename: "Channel",
+          id: "128",
+          name: "Channel"
+        },
+        isPublished: false,
+        publicationDate: null
+      }
+    ],
     id: "Q29sbGVjdGlvbjoc",
-    isPublished: true,
     name: "Yellow Submarine 2019",
     products: {
       __typename: "ProductCountableConnection",
@@ -77,9 +145,20 @@ export const collection: (
     alt: "Alt text",
     url: placeholderCollectionImage
   },
-  descriptionJson: JSON.stringify(content),
+  channelListings: [
+    {
+      __typename: "CollectionChannelListing",
+      channel: {
+        __typename: "Channel",
+        id: "223",
+        name: "Channel"
+      },
+      isPublished: false,
+      publicationDate: null
+    }
+  ],
+  description: JSON.stringify(content),
   id: "Q29sbGVjdGlvbjox",
-  isPublished: true,
   metadata: [
     {
       __typename: "MetadataItem",
@@ -94,11 +173,39 @@ export const collection: (
     edges: [
       {
         __typename: "ProductCountableEdge",
-        cursor: "YXJyYXljb25uZWN0aW9uOjA=",
         node: {
           __typename: "Product",
+          channelListings: [
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "123",
+                name: "Channel1"
+              },
+              isAvailableForPurchase: false,
+              isPublished: true,
+              publicationDate: "2020-07-14",
+              visibleInListings: true
+            },
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "124",
+                name: "Channel2"
+              },
+              isAvailableForPurchase: false,
+              isPublished: false,
+              publicationDate: "2020-07-30",
+              visibleInListings: true
+            }
+          ],
           id: "UHJvZHVjdDoxNw==",
-          isPublished: true,
           name: "Murray Inc",
           productType: {
             __typename: "ProductType",
@@ -110,11 +217,39 @@ export const collection: (
       },
       {
         __typename: "ProductCountableEdge",
-        cursor: "YXJyYXljb25uZWN0aW9uOjE=",
         node: {
           __typename: "Product",
+          channelListings: [
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "123",
+                name: "Channel1"
+              },
+              isAvailableForPurchase: false,
+              isPublished: true,
+              publicationDate: "2020-07-14",
+              visibleInListings: true
+            },
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "124",
+                name: "Channel2"
+              },
+              isAvailableForPurchase: false,
+              isPublished: false,
+              publicationDate: "2020-07-30",
+              visibleInListings: true
+            }
+          ],
           id: "UHJvZHVjdDoyNw==",
-          isPublished: true,
           name: "Williams-Taylor",
           productType: {
             __typename: "ProductType",
@@ -126,11 +261,39 @@ export const collection: (
       },
       {
         __typename: "ProductCountableEdge",
-        cursor: "YXJyYXljb25uZWN0aW9uOjI=",
         node: {
           __typename: "Product",
+          channelListings: [
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "123",
+                name: "Channel1"
+              },
+              isAvailableForPurchase: false,
+              isPublished: true,
+              publicationDate: "2020-07-14",
+              visibleInListings: false
+            },
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "124",
+                name: "Channel2"
+              },
+              isAvailableForPurchase: false,
+              isPublished: false,
+              publicationDate: "2020-07-30",
+              visibleInListings: false
+            }
+          ],
           id: "UHJvZHVjdDoyOQ==",
-          isPublished: true,
           name: "Hebert-Sherman",
           productType: {
             __typename: "ProductType",
@@ -142,11 +305,39 @@ export const collection: (
       },
       {
         __typename: "ProductCountableEdge",
-        cursor: "YXJyYXljb25uZWN0aW9uOjM=",
         node: {
           __typename: "Product",
+          channelListings: [
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "123",
+                name: "Channel1"
+              },
+              isAvailableForPurchase: false,
+              isPublished: true,
+              publicationDate: "2020-07-14",
+              visibleInListings: false
+            },
+            {
+              __typename: "ProductChannelListing",
+              availableForPurchase: null,
+              channel: {
+                __typename: "Channel",
+                currencyCode: "USD",
+                id: "124",
+                name: "Channel2"
+              },
+              isAvailableForPurchase: false,
+              isPublished: false,
+              publicationDate: "2020-07-30",
+              visibleInListings: false
+            }
+          ],
           id: "UHJvZHVjdDo1Mw==",
-          isPublished: true,
           name: "Estes, Johnson and Graham",
           productType: {
             __typename: "ProductType",
@@ -165,7 +356,6 @@ export const collection: (
       startCursor: ""
     }
   },
-  publicationDate: "2018-08-25T18:45:54.125Z",
   seoDescription: "",
   seoTitle: "",
   slug: "summer-collection"

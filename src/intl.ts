@@ -7,6 +7,10 @@ export const commonMessages = defineMessages({
   catalog: {
     defaultMessage: "Catalog"
   },
+  chooseFile: {
+    defaultMessage: "Choose file",
+    description: "button"
+  },
   customApps: {
     defaultMessage: "Local Apps"
   },
@@ -20,6 +24,9 @@ export const commonMessages = defineMessages({
   },
   description: {
     defaultMessage: "Description"
+  },
+  descriptionOptional: {
+    defaultMessage: "Description (optional)"
   },
   discounts: {
     defaultMessage: "Discounts"
@@ -41,6 +48,9 @@ export const commonMessages = defineMessages({
   },
   generalInformations: {
     defaultMessage: "General Information"
+  },
+  insufficientPermissions: {
+    defaultMessage: "Insufficient permissions"
   },
   lastName: {
     defaultMessage: "Last Name"
@@ -81,6 +91,9 @@ export const commonMessages = defineMessages({
   },
   summary: {
     defaultMessage: "Summary"
+  },
+  unauthorizedDashboardAccess: {
+    defaultMessage: "Only staff users can access the dashboard"
   },
   uploadImage: {
     defaultMessage: "Upload image",
@@ -179,6 +192,10 @@ export const sectionNames = defineMessages({
     defaultMessage: "Categories",
     description: "categories section name"
   },
+  channels: {
+    defaultMessage: "Channels",
+    description: "channels section name"
+  },
   collections: {
     defaultMessage: "Collections",
     description: "collections section name"
@@ -195,6 +212,10 @@ export const sectionNames = defineMessages({
     defaultMessage: "Draft Orders",
     description: "draft orders section name"
   },
+  exchangeRates: {
+    defaultMessage: "Exchange Rates",
+    description: "Manage and Update your warehouse information"
+  },
   home: {
     defaultMessage: "Home",
     description: "home section name"
@@ -206,6 +227,10 @@ export const sectionNames = defineMessages({
   orders: {
     defaultMessage: "Orders",
     description: "orders section name"
+  },
+  pageTypes: {
+    defaultMessage: "Page Types",
+    description: "page types section name"
   },
   pages: {
     defaultMessage: "Pages",

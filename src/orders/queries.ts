@@ -1,5 +1,10 @@
 import { fragmentAddress } from "@saleor/fragments/address";
-import { fragmentOrderDetails } from "@saleor/fragments/orders";
+import {
+  fragmentOrderDetails,
+  fragmentOrderSettings,
+  fragmentRefundOrderLine
+} from "@saleor/fragments/orders";
+import { fragmentMoney } from "@saleor/fragments/products";
 import makeQuery from "@saleor/hooks/makeQuery";
 import makeTopLevelSearch from "@saleor/hooks/makeTopLevelSearch";
 import gql from "graphql-tag";
@@ -15,6 +20,11 @@ import {
   OrderFulfillDataVariables
 } from "./types/OrderFulfillData";
 import { OrderList, OrderListVariables } from "./types/OrderList";
+import {
+  OrderRefundData,
+  OrderRefundDataVariables
+} from "./types/OrderRefundData";
+import { OrderSettings } from "./types/OrderSettings";
 import {
   SearchOrderVariant as SearchOrderVariantType,
   SearchOrderVariantVariables
@@ -129,6 +139,7 @@ export const useOrderDraftListQuery = makeQuery<
 
 export const orderDetailsQuery = gql`
   ${fragmentOrderDetails}
+  ${fragmentMoney}
   query OrderDetails($id: ID!) {
     order(id: $id) {
       ...OrderDetailsFragment
@@ -142,10 +153,15 @@ export const orderDetailsQuery = gql`
     }
   }
 `;
+
 export const TypedOrderDetailsQuery = TypedQuery<
   OrderDetails,
   OrderDetailsVariables
 >(orderDetailsQuery);
+
+export const useOrderQuery = makeQuery<OrderDetails, OrderDetailsVariables>(
+  orderDetailsQuery
+);
 
 export const searchOrderVariant = gql`
   query SearchOrderVariant($first: Int!, $query: String!, $after: String) {
@@ -161,12 +177,16 @@ export const searchOrderVariant = gql`
             id
             name
             sku
-            pricing {
-              priceUndiscounted {
-                net {
-                  amount
-                  currency
-                }
+            channelListings {
+              channel {
+                id
+                isActive
+                name
+                currencyCode
+              }
+              price {
+                amount
+                currency
               }
             }
           }
@@ -234,3 +254,59 @@ export const useOrderFulfillData = makeQuery<
   OrderFulfillData,
   OrderFulfillDataVariables
 >(orderFulfillData);
+
+export const orderSettingsQuery = gql`
+  ${fragmentOrderSettings}
+  query OrderSettings {
+    orderSettings {
+      ...OrderSettingsFragment
+    }
+  }
+`;
+export const useOrderSettingsQuery = makeQuery<OrderSettings, never>(
+  orderSettingsQuery
+);
+
+const orderRefundData = gql`
+  ${fragmentMoney}
+  ${fragmentRefundOrderLine}
+  query OrderRefundData($orderId: ID!) {
+    order(id: $orderId) {
+      id
+      number
+      total {
+        gross {
+          ...Money
+        }
+      }
+      totalCaptured {
+        ...Money
+      }
+      shippingPrice {
+        gross {
+          ...Money
+        }
+      }
+      lines {
+        ...RefundOrderLineFragment
+        quantityFulfilled
+      }
+      fulfillments {
+        id
+        status
+        fulfillmentOrder
+        lines {
+          id
+          quantity
+          orderLine {
+            ...RefundOrderLineFragment
+          }
+        }
+      }
+    }
+  }
+`;
+export const useOrderRefundData = makeQuery<
+  OrderRefundData,
+  OrderRefundDataVariables
+>(orderRefundData);

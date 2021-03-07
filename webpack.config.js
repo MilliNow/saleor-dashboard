@@ -4,6 +4,7 @@ const CheckerPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
 require("dotenv").config();
 
@@ -26,7 +27,9 @@ const environmentPlugin = new webpack.EnvironmentPlugin({
   API_URI: "",
   APP_MOUNT_URI: "/",
   DEMO_MODE: false,
-  GTM_ID: ""
+  ENVIRONMENT: "",
+  GTM_ID: "",
+  SENTRY_DSN: ""
 });
 
 const dashboardBuildPath = "build/dashboard/";
@@ -41,8 +44,8 @@ module.exports = (env, argv) => {
     throw new Error("Environment variable API_URI not set");
   }
 
+  const publicPath = process.env.STATIC_URL || "/";
   if (!devMode) {
-    const publicPath = process.env.STATIC_URL || "/";
     output = {
       chunkFilename: "[name].[chunkhash].js",
       filename: "[name].[chunkhash].js",
@@ -55,9 +58,24 @@ module.exports = (env, argv) => {
       chunkFilename: "[name].js",
       filename: "[name].js",
       path: resolve(dashboardBuildPath),
-      publicPath: "/"
+      publicPath
     };
     fileLoaderPath = "file-loader?name=[name].[ext]";
+  }
+
+  // Create release if sentry config is set
+  let sentryPlugin;
+  if (
+    !devMode &&
+    process.env.SENTRY_ORG &&
+    process.env.SENTRY_PROJECT &&
+    process.env.SENTRY_DSN &&
+    process.env.SENTRY_AUTH_TOKEN
+  ) {
+    sentryPlugin = new SentryWebpackPlugin({
+      include: "./build/dashboard/",
+      urlPrefix: process.env.SENTRY_URL_PREFIX
+    });
   }
 
   return {
@@ -68,7 +86,7 @@ module.exports = (env, argv) => {
       hot: true,
       port: 9000
     },
-    devtool: "sourceMap",
+    devtool: devMode ? "cheap-module-source-map" : "source-map",
     entry: {
       dashboard: "./src/index.tsx"
     },
@@ -100,7 +118,12 @@ module.exports = (env, argv) => {
       splitChunks: false
     },
     output,
-    plugins: [checkerPlugin, environmentPlugin, htmlWebpackPlugin],
+    plugins: [
+      checkerPlugin,
+      environmentPlugin,
+      htmlWebpackPlugin,
+      sentryPlugin
+    ].filter(Boolean),
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
       plugins: [pathsPlugin]

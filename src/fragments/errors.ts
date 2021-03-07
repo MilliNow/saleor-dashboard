@@ -1,5 +1,12 @@
 import gql from "graphql-tag";
 
+export const attributeErrorFragment = gql`
+  fragment AttributeErrorFragment on AttributeError {
+    code
+    field
+  }
+`;
+
 export const productErrorFragment = gql`
   fragment ProductErrorFragment on ProductError {
     code
@@ -15,6 +22,24 @@ export const productErrorWithAttributesFragment = gql`
   }
 `;
 
+export const productChannelListingErrorFragment = gql`
+  fragment ProductChannelListingErrorFragment on ProductChannelListingError {
+    code
+    field
+    message
+    channels
+  }
+`;
+
+export const collectionChannelListingErrorFragment = gql`
+  fragment CollectionChannelListingErrorFragment on CollectionChannelListingError {
+    code
+    field
+    message
+    channels
+  }
+`;
+
 export const accountErrorFragment = gql`
   fragment AccountErrorFragment on AccountError {
     code
@@ -26,6 +51,7 @@ export const discountErrorFragment = gql`
   fragment DiscountErrorFragment on DiscountError {
     code
     field
+    channels
   }
 `;
 
@@ -43,10 +69,25 @@ export const orderErrorFragment = gql`
   }
 `;
 
+export const orderSettingsErrorFragment = gql`
+  fragment OrderSettingsErrorFragment on OrderSettingsError {
+    code
+    field
+  }
+`;
+
 export const pageErrorFragment = gql`
   fragment PageErrorFragment on PageError {
     code
     field
+  }
+`;
+
+export const pageErrorWithAttributesFragment = gql`
+  ${pageErrorFragment}
+  fragment PageErrorWithAttributesFragment on PageError {
+    ...PageErrorFragment
+    attributes
   }
 `;
 
@@ -62,6 +103,7 @@ export const bulkProductErrorFragment = gql`
     field
     code
     index
+    channels
   }
 `;
 export const bulkStockErrorFragment = gql`
@@ -75,6 +117,14 @@ export const stockErrorFragment = gql`
   fragment StockErrorFragment on StockError {
     code
     field
+  }
+`;
+
+export const shippingChannelsErrorFragment = gql`
+  fragment ShippingChannelsErrorFragment on ShippingError {
+    code
+    field
+    channels
   }
 `;
 
@@ -145,6 +195,20 @@ export const pluginErrorFragment = gql`
 
 export const metadataErrorFragment = gql`
   fragment MetadataErrorFragment on MetadataError {
+    code
+    field
+  }
+`;
+
+export const collectionsErrorFragment = gql`
+  fragment CollectionErrorFragment on CollectionError {
+    code
+    field
+  }
+`;
+
+export const uploadErrorFragment = gql`
+  fragment UploadErrorFragment on UploadError {
     code
     field
   }

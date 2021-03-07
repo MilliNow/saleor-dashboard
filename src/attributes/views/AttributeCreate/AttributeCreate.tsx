@@ -1,9 +1,10 @@
-import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
+import { getAttributeData } from "@saleor/attributes/utils/data";
+import { AttributeErrorFragment } from "@saleor/fragments/types/AttributeErrorFragment";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
 import { getStringOrPlaceholder } from "@saleor/misc";
 import { ReorderEvent } from "@saleor/types";
-import { ProductErrorCode } from "@saleor/types/globalTypes";
+import { AttributeErrorCode } from "@saleor/types/globalTypes";
 import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
 import createMetadataCreateHandler from "@saleor/utils/handlers/metadataCreateHandler";
 import {
@@ -41,9 +42,9 @@ interface AttributeDetailsProps {
   params: AttributeAddUrlQueryParams;
 }
 
-const attributeValueAlreadyExistsError: ProductErrorFragment = {
-  __typename: "ProductError",
-  code: ProductErrorCode.ALREADY_EXISTS,
+const attributeValueAlreadyExistsError: AttributeErrorFragment = {
+  __typename: "AttributeError",
+  code: AttributeErrorCode.ALREADY_EXISTS,
   field: "name"
 };
 
@@ -62,9 +63,9 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ params }) => {
   const [values, setValues] = React.useState<
     AttributeValueEditDialogFormData[]
   >([]);
-  const [valueErrors, setValueErrors] = React.useState<ProductErrorFragment[]>(
-    []
-  );
+  const [valueErrors, setValueErrors] = React.useState<
+    AttributeErrorFragment[]
+  >([]);
 
   const [attributeCreate, attributeCreateOpts] = useAttributeCreateMutation({
     onCompleted: data => {
@@ -115,15 +116,7 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ params }) => {
     setValues(move(values[oldIndex], values, areValuesEqual, newIndex));
 
   const handleCreate = async (data: AttributePageFormData) => {
-    const input = {
-      ...data,
-      metadata: undefined,
-      privateMetadata: undefined,
-      storefrontSearchPosition: parseInt(data.storefrontSearchPosition, 0),
-      values: values.map(value => ({
-        name: value.name
-      }))
-    };
+    const input = getAttributeData(data, values);
 
     const result = await attributeCreate({
       variables: {
@@ -163,10 +156,11 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ params }) => {
         saveButtonBarState={attributeCreateOpts.status}
         values={values.map((value, valueIndex) => ({
           __typename: "AttributeValue" as "AttributeValue",
+          file: null,
           id: valueIndex.toString(),
+          reference: null,
           slug: slugify(value.name).toLowerCase(),
           sortOrder: valueIndex,
-          type: null,
           value: null,
           ...value
         }))}

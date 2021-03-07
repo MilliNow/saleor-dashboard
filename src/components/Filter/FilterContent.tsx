@@ -25,11 +25,11 @@ import { FilterReducerAction } from "./reducer";
 import { FieldType, FilterType, IFilter } from "./types";
 
 export interface FilterContentProps<T extends string = string> {
-  currencySymbol: string;
   filters: IFilter<T>;
   onFilterPropertyChange: React.Dispatch<FilterReducerAction<T>>;
   onClear: () => void;
   onSubmit: () => void;
+  currencySymbol?: string;
 }
 
 const useStyles = makeStyles(
@@ -157,6 +157,7 @@ const FilterContent: React.FC<FilterContentProps> = ({
         </div>
         <Hr />
         {filters
+          .filter(filter => !!filter)
           .sort((a, b) => (a.name > b.name ? 1 : -1))
           .map(filterField => (
             <React.Fragment key={filterField.name}>

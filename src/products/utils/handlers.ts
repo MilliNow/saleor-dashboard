@@ -1,43 +1,95 @@
+import {
+  ChannelData,
+  ChannelPriceArgs,
+  ChannelPriceData
+} from "@saleor/channels/utils";
+import { AttributeInputData } from "@saleor/components/Attributes";
 import { FormChange } from "@saleor/hooks/useForm";
-import { FormsetChange, FormsetData } from "@saleor/hooks/useFormset";
-import { toggle } from "@saleor/utils/lists";
+import { FormsetData } from "@saleor/hooks/useFormset";
 
-import { ProductAttributeInputData } from "../components/ProductAttributes";
 import { getAttributeInputFromProductType, ProductType } from "./data";
 
-export function createAttributeChangeHandler(
-  changeAttributeData: FormsetChange<string[]>,
+export function createChannelsPriceChangeHandler(
+  channelListings: ChannelPriceData[],
+  updateChannels: (data: ChannelPriceData[]) => void,
   triggerChange: () => void
-): FormsetChange<string> {
-  return (attributeId: string, value: string) => {
+) {
+  return (id: string, priceData: ChannelPriceArgs) => {
+    const { costPrice, price } = priceData;
+    const channelIndex = channelListings.findIndex(
+      channel => channel.id === id
+    );
+    const channel = channelListings[channelIndex];
+
+    const updatedChannels = [
+      ...channelListings.slice(0, channelIndex),
+      {
+        ...channel,
+        costPrice,
+        price
+      },
+      ...channelListings.slice(channelIndex + 1)
+    ];
+    updateChannels(updatedChannels);
     triggerChange();
-    changeAttributeData(attributeId, value === "" ? [] : [value]);
   };
 }
 
-export function createAttributeMultiChangeHandler(
-  changeAttributeData: FormsetChange<string[]>,
-  attributes: FormsetData<ProductAttributeInputData, string[]>,
+export function createChannelsChangeHandler(
+  channelListings: ChannelData[],
+  updateChannels: (data: ChannelData[]) => void,
   triggerChange: () => void
-): FormsetChange<string> {
-  return (attributeId: string, value: string) => {
-    const attribute = attributes.find(
-      attribute => attribute.id === attributeId
+) {
+  return (
+    id: string,
+    data: Omit<ChannelData, "name" | "price" | "currency" | "id">
+  ) => {
+    const channelIndex = channelListings.findIndex(
+      channel => channel.id === id
     );
+    const channel = channelListings[channelIndex];
 
-    const newAttributeValues = toggle(
-      value,
-      attribute.value,
-      (a, b) => a === b
-    );
-
+    const updatedChannels = [
+      ...channelListings.slice(0, channelIndex),
+      {
+        ...channel,
+        ...data
+      },
+      ...channelListings.slice(channelIndex + 1)
+    ];
+    updateChannels(updatedChannels);
     triggerChange();
-    changeAttributeData(attributeId, newAttributeValues);
+  };
+}
+
+export function createVariantChannelsChangeHandler(
+  channelListings: ChannelPriceData[],
+  setData: (data: ChannelPriceData[]) => void,
+  triggerChange: () => void
+) {
+  return (id: string, priceData: ChannelPriceArgs) => {
+    const { costPrice, price } = priceData;
+    const channelIndex = channelListings.findIndex(
+      channel => channel.id === id
+    );
+    const channel = channelListings[channelIndex];
+
+    const updatedChannels = [
+      ...channelListings.slice(0, channelIndex),
+      {
+        ...channel,
+        costPrice,
+        price
+      },
+      ...channelListings.slice(channelIndex + 1)
+    ];
+    setData(updatedChannels);
+    triggerChange();
   };
 }
 
 export function createProductTypeSelectHandler(
-  setAttributes: (data: FormsetData<ProductAttributeInputData>) => void,
+  setAttributes: (data: FormsetData<AttributeInputData>) => void,
   setProductType: (productType: ProductType) => void,
   productTypeChoiceList: ProductType[],
   triggerChange: () => void
@@ -53,18 +105,34 @@ export function createProductTypeSelectHandler(
   };
 }
 
-interface ProductAvailabilityArgs {
-  availableForPurchase: string | null;
-  isAvailableForPurchase: boolean;
-  productId: string;
-}
+export const getChannelsInput = (channels: ChannelPriceData[]) =>
+  channels?.map(channel => ({
+    data: channel,
+    id: channel.id,
+    label: channel.name,
+    value: {
+      costPrice: channel.costPrice || "",
+      price: channel.price || ""
+    }
+  }));
 
-export const getProductAvailabilityVariables = ({
-  isAvailableForPurchase,
-  availableForPurchase,
-  productId
-}: ProductAvailabilityArgs) => ({
-  isAvailable: isAvailableForPurchase,
-  productId,
-  startDate: availableForPurchase || null
-});
+export const getAvailabilityVariables = (channels: ChannelData[]) =>
+  channels.map(channel => {
+    const { isAvailableForPurchase, availableForPurchase } = channel;
+    const isAvailable =
+      availableForPurchase && !isAvailableForPurchase
+        ? true
+        : isAvailableForPurchase;
+
+    return {
+      availableForPurchaseDate:
+        isAvailableForPurchase || availableForPurchase === ""
+          ? null
+          : availableForPurchase,
+      channelId: channel.id,
+      isAvailableForPurchase: isAvailable,
+      isPublished: channel.isPublished,
+      publicationDate: channel.publicationDate,
+      visibleInListings: channel.visibleInListings
+    };
+  });

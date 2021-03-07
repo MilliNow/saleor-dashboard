@@ -1,3 +1,4 @@
+import { ATTRIBUTE_TYPES_WITH_DEDICATED_VALUES } from "@saleor/attributes/utils/data";
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -12,11 +13,15 @@ import {
   AttributeDetailsFragment,
   AttributeDetailsFragment_values
 } from "@saleor/fragments/types/AttributeDetailsFragment";
-import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
+import { AttributeErrorFragment } from "@saleor/fragments/types/AttributeErrorFragment";
 import { sectionNames } from "@saleor/intl";
 import { maybe } from "@saleor/misc";
 import { ReorderAction } from "@saleor/types";
-import { AttributeInputTypeEnum } from "@saleor/types/globalTypes";
+import {
+  AttributeEntityTypeEnum,
+  AttributeInputTypeEnum,
+  AttributeTypeEnum
+} from "@saleor/types/globalTypes";
 import { mapMetadataItemToInput } from "@saleor/utils/maps";
 import useMetadataChangeTrigger from "@saleor/utils/metadata/useMetadataChangeTrigger";
 import React from "react";
@@ -24,13 +29,14 @@ import { useIntl } from "react-intl";
 import slugify from "slugify";
 
 import AttributeDetails from "../AttributeDetails";
+import AttributeOrganization from "../AttributeOrganization";
 import AttributeProperties from "../AttributeProperties";
 import AttributeValues from "../AttributeValues";
 
 export interface AttributePageProps {
   attribute: AttributeDetailsFragment | null;
   disabled: boolean;
-  errors: ProductErrorFragment[];
+  errors: AttributeErrorFragment[];
   saveButtonBarState: ConfirmButtonTransitionState;
   values: AttributeDetailsFragment_values[];
   onBack: () => void;
@@ -43,9 +49,11 @@ export interface AttributePageProps {
 }
 
 export interface AttributePageFormData extends MetadataFormData {
+  type: AttributeTypeEnum;
   availableInGrid: boolean;
   filterableInDashboard: boolean;
   inputType: AttributeInputTypeEnum;
+  entityType: AttributeEntityTypeEnum;
   filterableInStorefront: boolean;
   name: string;
   slug: string;
@@ -79,6 +87,7 @@ const AttributePage: React.FC<AttributePageProps> = ({
     attribute === null
       ? {
           availableInGrid: true,
+          entityType: null,
           filterableInDashboard: true,
           filterableInStorefront: true,
           inputType: AttributeInputTypeEnum.DROPDOWN,
@@ -87,11 +96,13 @@ const AttributePage: React.FC<AttributePageProps> = ({
           privateMetadata: [],
           slug: "",
           storefrontSearchPosition: "",
+          type: AttributeTypeEnum.PRODUCT_TYPE,
           valueRequired: true,
           visibleInStorefront: true
         }
       : {
           availableInGrid: maybe(() => attribute.availableInGrid, true),
+          entityType: attribute?.entityType ?? null,
           filterableInDashboard: maybe(
             () => attribute.filterableInDashboard,
             true
@@ -114,6 +125,7 @@ const AttributePage: React.FC<AttributePageProps> = ({
             () => attribute.storefrontSearchPosition.toString(),
             ""
           ),
+          type: attribute?.type || AttributeTypeEnum.PRODUCT_TYPE,
           valueRequired: maybe(() => attribute.valueRequired, true),
           visibleInStorefront: maybe(() => attribute.visibleInStorefront, true)
         };
@@ -125,12 +137,14 @@ const AttributePage: React.FC<AttributePageProps> = ({
       !attribute || isPrivateMetadataModified
         ? data.privateMetadata
         : undefined;
+    const type = attribute === null ? data.type : undefined;
 
     return onSubmit({
       ...data,
       metadata,
       privateMetadata,
-      slug: data.slug || slugify(data.name).toLowerCase()
+      slug: data.slug || slugify(data.name).toLowerCase(),
+      type
     });
   };
 
@@ -163,19 +177,32 @@ const AttributePage: React.FC<AttributePageProps> = ({
                   errors={errors}
                   onChange={change}
                 />
-                <CardSpacer />
-                <AttributeValues
-                  disabled={disabled}
-                  values={values}
-                  onValueAdd={onValueAdd}
-                  onValueDelete={onValueDelete}
-                  onValueReorder={onValueReorder}
-                  onValueUpdate={onValueUpdate}
-                />
+                {ATTRIBUTE_TYPES_WITH_DEDICATED_VALUES.includes(
+                  data.inputType
+                ) && (
+                  <>
+                    <CardSpacer />
+                    <AttributeValues
+                      disabled={disabled}
+                      values={values}
+                      onValueAdd={onValueAdd}
+                      onValueDelete={onValueDelete}
+                      onValueReorder={onValueReorder}
+                      onValueUpdate={onValueUpdate}
+                    />
+                  </>
+                )}
                 <CardSpacer />
                 <Metadata data={data} onChange={changeMetadata} />
               </div>
               <div>
+                <AttributeOrganization
+                  canChangeType={attribute === null}
+                  data={data}
+                  disabled={disabled}
+                  onChange={change}
+                />
+                <CardSpacer />
                 <AttributeProperties
                   data={data}
                   errors={errors}
