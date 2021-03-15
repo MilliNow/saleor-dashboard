@@ -217,7 +217,7 @@ const SeoForm: React.FC<SeoFormProps> = props => {
             />
             <FormSpacer />
             <TextField
-              error={title.length > maxTitleLength}
+              error={title?.length > maxTitleLength}
               name={SeoField.title}
               label={
                 <div className={classes.labelContainer}>
@@ -252,7 +252,7 @@ const SeoForm: React.FC<SeoFormProps> = props => {
             />
             <FormSpacer />
             <TextField
-              error={description.length > maxDescriptionLength}
+              error={description?.length > maxDescriptionLength}
               name={SeoField.description}
               label={
                 <div className={classes.labelContainer}>
