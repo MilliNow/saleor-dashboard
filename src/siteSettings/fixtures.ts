@@ -6,7 +6,7 @@ export const shop: SiteSettings_shop = {
     __typename: "Address",
     city: "Kenstad",
     cityArea: "Alabama",
-    companyName: "Saleor e-commerce",
+    companyName: "Olive Land Store",
     country: {
       __typename: "CountryDisplay",
       code: "UA",
@@ -36,5 +36,5 @@ export const shop: SiteSettings_shop = {
     __typename: "Domain",
     host: "localhost:8000"
   },
-  name: "Saleor e-commerce"
+  name: "Olive Land Store"
 };
