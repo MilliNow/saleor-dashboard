@@ -1,3 +1,4 @@
+import { ShopInfo_shop_countries } from "@saleor/components/Shop/types/ShopInfo";
 import { InvoiceFragment } from "@saleor/fragments/types/InvoiceFragment";
 import { OrderSettingsFragment } from "@saleor/fragments/types/OrderSettingsFragment";
 import { SearchCustomers_search_edges_node } from "@saleor/searches/types/SearchCustomers";
@@ -822,7 +823,6 @@ export const order = (placeholder: string): OrderDetails_order => ({
   },
   created: "2018-09-11T09:37:28.185874+00:00",
   customerNote: "Lorem ipsum dolor sit amet",
-  discount: null,
   discounts: [],
   events: [
     {
@@ -1380,9 +1380,7 @@ export const draftOrder = (placeholder: string): OrderDetails_order => ({
   },
   created: "2018-09-20T23:23:39.811428+00:00",
   customerNote: "Lorem ipsum dolor sit",
-  discount: null,
   discounts: [],
-
   events: [],
   fulfillments: [],
   id: "T3JkZXI6MjQ=",
@@ -1590,12 +1588,12 @@ export const variants = [
   { id: "p7", name: "Product 5: variant 2", sku: "14345", stockQuantity: 11 }
 ];
 export const prefixes = ["01", "02", "41", "49"];
-export const countries = [
-  { code: "AF", label: "Afghanistan" },
-  { code: "AX", label: "Åland Islands" },
-  { code: "AL", label: "Albania" },
-  { code: "DZ", label: "Algeria" },
-  { code: "AS", label: "American Samoa" }
+export const countries: ShopInfo_shop_countries[] = [
+  { __typename: "CountryDisplay", code: "AF", country: "Afghanistan" },
+  { __typename: "CountryDisplay", code: "AX", country: "Åland Islands" },
+  { __typename: "CountryDisplay", code: "AL", country: "Albania" },
+  { __typename: "CountryDisplay", code: "DZ", country: "Algeria" },
+  { __typename: "CountryDisplay", code: "AS", country: "American Samoa" }
 ];
 export const shippingMethods = [
   { country: "whole world", id: "s1", name: "DHL", price: {} },

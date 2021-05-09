@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { OrderErrorCode, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
+import { OrderErrorCode, AddressTypeEnum, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderCapture
@@ -13,6 +13,7 @@ export interface OrderCapture_orderCapture_errors {
   __typename: "OrderError";
   code: OrderErrorCode;
   field: string | null;
+  addressType: AddressTypeEnum | null;
 }
 
 export interface OrderCapture_orderCapture_order_metadata {
@@ -456,12 +457,6 @@ export interface OrderCapture_orderCapture_order_availableShippingMethods {
   price: OrderCapture_orderCapture_order_availableShippingMethods_price | null;
 }
 
-export interface OrderCapture_orderCapture_order_discount {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
 export interface OrderCapture_orderCapture_order_invoices {
   __typename: "Invoice";
   id: string;
@@ -510,7 +505,6 @@ export interface OrderCapture_orderCapture_order {
   user: OrderCapture_orderCapture_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderCapture_orderCapture_order_availableShippingMethods | null)[] | null;
-  discount: OrderCapture_orderCapture_order_discount | null;
   invoices: (OrderCapture_orderCapture_order_invoices | null)[] | null;
   channel: OrderCapture_orderCapture_order_channel;
   isPaid: boolean;

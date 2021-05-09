@@ -21,6 +21,7 @@
     "@editorjs/header": "^2.6.1",
     "@editorjs/image": "^2.6.0",
     "@editorjs/list": "^1.6.1",
+    "@editorjs/paragraph": "^2.8.0",
     "@editorjs/quote": "^2.4.0",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -169,7 +170,15 @@
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "webpack-manifest-plugin": "2.2.0",
+    "workbox-cacheable-response": "^6.1.2",
+    "workbox-expiration": "^6.1.2",
+    "workbox-precaching": "^6.1.2",
+    "workbox-routing": "^6.1.2",
+    "workbox-strategies": "^6.1.2",
+    "workbox-webpack-plugin": "^6.1.2",
+    "register-service-worker": "^1.7.2"
   },
   "optionalDependencies": {
     "fsevents": "^1.2.9"

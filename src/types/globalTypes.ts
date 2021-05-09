@@ -89,6 +89,7 @@ export enum AttributeInputTypeEnum {
   DROPDOWN = "DROPDOWN",
   FILE = "FILE",
   MULTISELECT = "MULTISELECT",
+  NUMERIC = "NUMERIC",
   REFERENCE = "REFERENCE",
   RICH_TEXT = "RICH_TEXT",
 }
@@ -530,6 +531,39 @@ export enum LanguageCodeEnum {
   ZH_HANT = "ZH_HANT",
 }
 
+export enum MeasurementUnitsEnum {
+  ACRE_FT = "ACRE_FT",
+  ACRE_IN = "ACRE_IN",
+  CM = "CM",
+  CUBIC_CENTIMETER = "CUBIC_CENTIMETER",
+  CUBIC_DECIMETER = "CUBIC_DECIMETER",
+  CUBIC_FOOT = "CUBIC_FOOT",
+  CUBIC_INCH = "CUBIC_INCH",
+  CUBIC_METER = "CUBIC_METER",
+  CUBIC_MILLIMETER = "CUBIC_MILLIMETER",
+  CUBIC_YARD = "CUBIC_YARD",
+  FL_OZ = "FL_OZ",
+  FT = "FT",
+  G = "G",
+  INCH = "INCH",
+  KG = "KG",
+  KM = "KM",
+  LB = "LB",
+  LITER = "LITER",
+  M = "M",
+  OZ = "OZ",
+  PINT = "PINT",
+  QT = "QT",
+  SQ_CM = "SQ_CM",
+  SQ_FT = "SQ_FT",
+  SQ_INCH = "SQ_INCH",
+  SQ_KM = "SQ_KM",
+  SQ_M = "SQ_M",
+  SQ_YD = "SQ_YD",
+  TONNE = "TONNE",
+  YD = "YD",
+}
+
 export enum MenuErrorCode {
   CANNOT_ASSIGN_NODE = "CANNOT_ASSIGN_NODE",
   GRAPHQL_ERROR = "GRAPHQL_ERROR",
@@ -815,7 +849,6 @@ export enum ProductFieldEnum {
   VARIANT_MEDIA = "VARIANT_MEDIA",
   VARIANT_SKU = "VARIANT_SKU",
   VARIANT_WEIGHT = "VARIANT_WEIGHT",
-  VISIBLE = "VISIBLE",
 }
 
 export enum ProductMediaType {
@@ -1025,6 +1058,7 @@ export enum WeightUnitsEnum {
   KG = "KG",
   LB = "LB",
   OZ = "OZ",
+  TONNE = "TONNE",
 }
 
 export interface AddressInput {
@@ -1049,7 +1083,6 @@ export interface AppFilterInput {
 
 export interface AppInput {
   name?: string | null;
-  isActive?: boolean | null;
   permissions?: (PermissionEnum | null)[] | null;
 }
 
@@ -1076,6 +1109,7 @@ export interface AttributeCreateInput {
   name: string;
   slug?: string | null;
   type: AttributeTypeEnum;
+  unit?: MeasurementUnitsEnum | null;
   values?: (AttributeValueCreateInput | null)[] | null;
   valueRequired?: boolean | null;
   isVariantOnly?: boolean | null;
@@ -1104,8 +1138,8 @@ export interface AttributeFilterInput {
 
 export interface AttributeInput {
   slug: string;
-  value?: string | null;
   values?: (string | null)[] | null;
+  valuesRange?: IntRangeInput | null;
 }
 
 export interface AttributeSortingInput {
@@ -1116,6 +1150,7 @@ export interface AttributeSortingInput {
 export interface AttributeUpdateInput {
   name?: string | null;
   slug?: string | null;
+  unit?: MeasurementUnitsEnum | null;
   removeValues?: (string | null)[] | null;
   addValues?: (AttributeValueCreateInput | null)[] | null;
   valueRequired?: boolean | null;
@@ -1623,7 +1658,6 @@ export interface ProductFilterInput {
   hasCategory?: boolean | null;
   attributes?: (AttributeInput | null)[] | null;
   stockAvailability?: StockAvailability | null;
-  productType?: string | null;
   stocks?: ProductStockFilterInput | null;
   search?: string | null;
   metadata?: (MetadataInput | null)[] | null;

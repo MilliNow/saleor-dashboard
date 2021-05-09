@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { OrderDiscountCommonInput, OrderErrorCode, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
+import { OrderDiscountCommonInput, OrderErrorCode, AddressTypeEnum, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderLineDiscountUpdate
@@ -13,6 +13,7 @@ export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_errors {
   __typename: "OrderError";
   code: OrderErrorCode;
   field: string | null;
+  addressType: AddressTypeEnum | null;
 }
 
 export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_order_metadata {
@@ -456,12 +457,6 @@ export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_order_available
   price: OrderLineDiscountUpdate_orderLineDiscountUpdate_order_availableShippingMethods_price | null;
 }
 
-export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_order_discount {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
 export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_order_invoices {
   __typename: "Invoice";
   id: string;
@@ -510,7 +505,6 @@ export interface OrderLineDiscountUpdate_orderLineDiscountUpdate_order {
   user: OrderLineDiscountUpdate_orderLineDiscountUpdate_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderLineDiscountUpdate_orderLineDiscountUpdate_order_availableShippingMethods | null)[] | null;
-  discount: OrderLineDiscountUpdate_orderLineDiscountUpdate_order_discount | null;
   invoices: (OrderLineDiscountUpdate_orderLineDiscountUpdate_order_invoices | null)[] | null;
   channel: OrderLineDiscountUpdate_orderLineDiscountUpdate_order_channel;
   isPaid: boolean;

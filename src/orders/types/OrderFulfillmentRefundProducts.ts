@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { OrderRefundProductsInput, OrderErrorCode, DiscountValueTypeEnum, FulfillmentStatus, OrderDiscountType, OrderEventsEmailsEnum, OrderEventsEnum, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
+import { OrderRefundProductsInput, OrderErrorCode, AddressTypeEnum, DiscountValueTypeEnum, FulfillmentStatus, OrderDiscountType, OrderEventsEmailsEnum, OrderEventsEnum, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderFulfillmentRefundProducts
@@ -13,6 +13,7 @@ export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_e
   __typename: "OrderError";
   code: OrderErrorCode;
   field: string | null;
+  addressType: AddressTypeEnum | null;
 }
 
 export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_fulfillment_lines_orderLine_variant {
@@ -551,12 +552,6 @@ export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_o
   price: OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_availableShippingMethods_price | null;
 }
 
-export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_discount {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
 export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_invoices {
   __typename: "Invoice";
   id: string;
@@ -605,7 +600,6 @@ export interface OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_o
   user: OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_availableShippingMethods | null)[] | null;
-  discount: OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_discount | null;
   invoices: (OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_invoices | null)[] | null;
   channel: OrderFulfillmentRefundProducts_orderFulfillmentRefundProducts_order_channel;
   isPaid: boolean;

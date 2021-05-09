@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { OrderDiscountCommonInput, OrderErrorCode, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
+import { OrderDiscountCommonInput, OrderErrorCode, AddressTypeEnum, OrderDiscountType, DiscountValueTypeEnum, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderDiscountUpdate
@@ -13,6 +13,7 @@ export interface OrderDiscountUpdate_orderDiscountUpdate_errors {
   __typename: "OrderError";
   code: OrderErrorCode;
   field: string | null;
+  addressType: AddressTypeEnum | null;
 }
 
 export interface OrderDiscountUpdate_orderDiscountUpdate_order_metadata {
@@ -456,12 +457,6 @@ export interface OrderDiscountUpdate_orderDiscountUpdate_order_availableShipping
   price: OrderDiscountUpdate_orderDiscountUpdate_order_availableShippingMethods_price | null;
 }
 
-export interface OrderDiscountUpdate_orderDiscountUpdate_order_discount {
-  __typename: "Money";
-  amount: number;
-  currency: string;
-}
-
 export interface OrderDiscountUpdate_orderDiscountUpdate_order_invoices {
   __typename: "Invoice";
   id: string;
@@ -510,7 +505,6 @@ export interface OrderDiscountUpdate_orderDiscountUpdate_order {
   user: OrderDiscountUpdate_orderDiscountUpdate_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderDiscountUpdate_orderDiscountUpdate_order_availableShippingMethods | null)[] | null;
-  discount: OrderDiscountUpdate_orderDiscountUpdate_order_discount | null;
   invoices: (OrderDiscountUpdate_orderDiscountUpdate_order_invoices | null)[] | null;
   channel: OrderDiscountUpdate_orderDiscountUpdate_order_channel;
   isPaid: boolean;
