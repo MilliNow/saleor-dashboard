@@ -81,7 +81,7 @@ const useStyles = makeStyles(
 );
 
 interface SeoFormProps {
-  description?: string;
+  description?: string | null;
   descriptionPlaceholder: string;
   disabled?: boolean;
   errors?: Array<
@@ -90,7 +90,7 @@ interface SeoFormProps {
   loading?: boolean;
   helperText?: string;
   allowEmptySlug?: boolean;
-  title: string;
+  title: string | null;
   slug: string;
   slugPlaceholder?: string;
   titlePlaceholder: string;
@@ -251,7 +251,7 @@ const SeoForm: React.FC<SeoFormProps> = props => {
                 }
               }}
               helperText={intl.formatMessage(seoFieldMessage)}
-              value={title}
+              value={title ?? ""}
               disabled={loading || disabled}
               placeholder={titlePlaceholder}
               onChange={onChange}
@@ -286,7 +286,7 @@ const SeoForm: React.FC<SeoFormProps> = props => {
                   maxLength: maxDescriptionLength
                 }
               }}
-              value={description}
+              value={description ?? ""}
               onChange={onChange}
               disabled={loading || disabled}
               fullWidth
